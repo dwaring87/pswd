@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+		<title>David Waring - PSWD</title>
+
+		<link href="/css/bootstrap.min.css" rel="stylesheet">
+		<link href="/css/bootstrap-switch.css" rel="stylesheet">
+		<!--[if lt IE 9]>
+			<script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+		<![endif]-->
+		<link href="/css/styles.css" rel="stylesheet">
+		<style>
+			.password-verdict {
+				font-weight: 700;
+				font-size: 14px;
+				padding-top: 15px;
+			}
+			ul.error-list {
+				font-size: 12px;
+				list-style-type: none;
+				padding: 0px;
+			}
+		</style>
+	</head>
+	<body>
+
+
+		<!-- NAV BAR -->
+		<div class="navbar-wrapper">
+		  <div class="container">
+		    <div class="navbar navbar-inverse navbar-static-top">
+					<div class="navbar-header">
+						<a class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+							<span class="icon-bar"></span>
+			      	<span class="icon-bar"></span>
+			      	<span class="icon-bar"></span>
+						</a>
+						<a class="navbar-brand" href="//www.davidwaring.net/index.html">David Waring</a>
+					</div>
+
+					<div class="navbar-collapse collapse">
+						<ul class="nav navbar-nav">
+							<li><a href="//www.davidwaring.net/index.html">Home</a></li>
+
+							<li class="dropdown">
+								<a href="//www.davidwaring.net/android/index.html" class="dropdown-toggle" data-toggle="dropdown">Android Apps <b class="caret"></b></a>
+								<ul class="dropdown-menu">
+									<li><a href="//www.davidwaring.net/rt/mnr/index.html">Right Track: Metro North</a></li>
+									<li><a href="//www.davidwaring.net/rt/lirr/index.html">Right Track: LIRR</a></li>
+									<li><a href="//www.davidwaring.net/android/nycts/index.html">NYC Transit Status</a></li>
+								</ul>
+							</li>
+
+							<li class="dropdown active">
+								<a href="//www.davidwaring.net/projects/index.html" class="dropdown-toggle" data-toggle="dropdown">Projects <b class="caret"></b></a>
+								<ul class="dropdown-menu">
+									<li><a href="//www.davidwaring.net/projects/rtm.html">RTM CLI</a></li>
+									<li><a href="//www.davidwaring.net/projects/backup.html">Mac OS X Backup Utility</a></li>
+									<li><a href="//pswd.davidwaring.net/">PSWD</a></li>
+								</ul>
+							</li>
+
+							<li class="dropdown">
+								<a href="//www.davidwaring.net/hiking/index.html" class="dropdown-toggle" data-toggle="dropdown">Hiking Maps <b class="caret"></b></a>
+								<ul class="dropdown-menu">
+									<li><a href="//www.davidwaring.net/hiking/ManorvilleHills.html">Manorville Hills</a></li>
+								</ul>
+							</li>
+
+							<li><a href="//www.davidwaring.net/contact.html">Contact</a></li>
+						</ul>
+					</div>
+		    </div>
+		  </div><!-- /container -->
+		</div><!-- /navbar wrapper -->
+
+
+
+		<div class="container content">
+
+			<div class="container" style="text-align: center; margin: 20px;">
+				<h1>PSWD <small><span class="label label-warning">Version 2</span></small></h1>
+				<h3>A pseudo-random password generator</h3>
+			</div>
+
+
+			<h4 style="cursor:pointer; float: left;" onclick="$('#details').slideToggle();"><span class="glyphicon glyphicon-info-sign"></span>&nbsp;&nbsp;What is PSWD?</h4>
+			<h5 class="hidden-xs" style="cursor:pointer; float: right;" onclick="window.open('pswd2.py');"><span class="glyphicon glyphicon-download-alt"></span>&nbsp;&nbsp;Download Python script</h5>
+			<div style="height: 0px; clear: both;"></div>
+
+			<div class="well" id="details" style="display:none;">
+				<p><strong>PSWD</strong> is a <strong>pseudo-random password generator</strong> that allows you to generate unique passwords for
+					different websites.</p>
+				<p>This program generates a seemingly random string of numbers, letters and special characters given a master password and a
+					domain.  When given the same master password and domain (using the same set of options), the script will generate the same password (meaning
+					there's no need to save or store your passwords since they can be regenerated when needed).  The master password is a secret key that you
+					create and use to generate unique passwords for yourself.  By entering the domain (for example: google.com) you can create a different
+					password for each website you visit.</p>
+				<p>The script has a number of options to customize the generated password:
+					<ul>
+						<li>Password length</li>
+						<li>Include lowercase and uppercase letters</li>
+						<li>Include symbols</li>
+						<li>Define the symbols to choose from</li>
+						<li>The number of hashes to use to generate the password</li>
+					</ul>
+				</p>
+			</div>
+
+			<br />
+			<br />
+
+			<div class="panel panel-primary">
+			  <div class="panel-heading">
+			    <h3 class="panel-title">Basic Options</h3>
+			  </div>
+			  <div class="panel-body">
+
+				  <div class="form-group">
+				    <label for="domain">Domain</label><a href="#domain" data-toggle="tooltip" title="Enter the domain (ex: google.com) of the website the password is going to be used for"><span class="glyphicon glyphicon-question-sign" style="margin-left: 10px;" tabindex="5"></span></a>
+				    <input type="url" class="form-control" id="domain" placeholder="Enter Domain (ex: google.com)" tabindex="1">
+				  </div>
+				  <div class="form-group">
+				    <label for="password">Master Password</label><a href="#password" data-toggle="tooltip" title="Enter your master password - the secret key you create to make the passwords unique for yourself"><span class="glyphicon glyphicon-question-sign" style="margin-left: 10px;" tabindex="6"></span></a>
+				    <input type="password" class="form-control" id="password" placeholder="Master Password" tabindex="2">
+				  </div>
+					<div class="form-group">
+						<label for="length">Length</label><a href="#length" data-toggle="tooltip" title="The number of characters in the final password"><span class="glyphicon glyphicon-question-sign" style="margin-left: 10px;" tabindex="7"></span></a>
+
+						<br />
+						<select id="length" class="selectpicker" tabindex="3">
+					    <option>4</option>
+					    <option>5</option>
+					    <option>6</option>
+							<option>7</option>
+							<option>8</option>
+							<option>9</option>
+							<option>10</option>
+							<option>11</option>
+							<option>12</option>
+							<option>13</option>
+							<option selected="true">14</option>
+							<option>15</option>
+							<option>16</option>
+							<option>17</option>
+							<option>18</option>
+							<option>19</option>
+							<option>20</option>
+							<option>21</option>
+							<option>22</option>
+							<option>23</option>
+							<option>24</option>
+							<option>25</option>
+							<option>26</option>
+							<option>27</option>
+							<option>28</option>
+							<option>29</option>
+							<option>30</option>
+							<option>31</option>
+							<option>32</option>
+							<option>33</option>
+							<option>34</option>
+							<option>35</option>
+							<option>36</option>
+							<option>37</option>
+							<option>38</option>
+							<option>39</option>
+							<option>40</option>
+							<option>41</option>
+							<option>42</option>
+					  </select>
+					</div>
+
+			  </div>
+			</div>
+
+
+
+
+			<div class="panel panel-info">
+				<div class="panel-heading" style="cursor:pointer;" onclick="$('#options').slideToggle();">
+					<h3 class="panel-title">Advanced Options</h3>
+				</div>
+				<div id="options" class="panel-body" style="display:none">
+
+					<div class="form-group" id="uppercase-group">
+						<label for="uppercase">Uppercase Letters</label><a href="#uppercase" data-toggle="tooltip" title="Turn on to allow uppercase letters in the generated password"><span class="glyphicon glyphicon-question-sign" style="margin-left: 10px;"></span></a>
+						<br />
+						<input type="checkbox" id="uppercase" name="uppercase" checked>
+					</div>
+
+					<div class="form-group" id="symbols-group">
+						<label for="symbols">Symbols</label><a href="#symbols" data-toggle="tooltip" title="Turn on to allow the use of special characters in the generated password"><span class="glyphicon glyphicon-question-sign" style="margin-left: 10px;"></span></a>
+						<br />
+						<input type="checkbox" id="symbols" name="symbols">
+					</div>
+
+					<div class="form-group">
+						<label for="symbol-chars">Symbol Characters</label><a href="#symbol-chars" data-toggle="tooltip" title="Enter the special characters that can be used as symbols.  '#' and '&amp;' are not supported."><span class="glyphicon glyphicon-question-sign" style="margin-left: 10px;"></span></a>
+						<input type="text" class="form-control" id="symbol-chars" value="!@$%^*()_-+=&lt;,&gt;.?/" disabled >
+					</div>
+
+					<div class="form-group">
+						<label for="hashes">Number of Hashes</label><a href="#hashes" data-toggle="tooltip" title="Enter the number of times the password is hashed"><span class="glyphicon glyphicon-question-sign" style="margin-left: 10px;"></span></a>
+						<input type="number" class="form-control" id="hashes" value="250">
+					</div>
+
+
+				</div>
+			</div>
+
+			<div class="well-sm">
+				<a id="generate" onclick="generate();" class="btn btn-success btn-lg btn-block" role="button" tabindex="4"><span class="glyphicon glyphicon-lock" style="margin-right: 15px;"></span>Generate Password</a>
+			</div>
+
+
+
+			<div id="error" class="alert alert-danger" role="alert" style="z-index: 9999; display: none; position: fixed; bottom: 0px; left: 10px; width: -moz-calc(100% - 20px); width: -webkit-calc(100% - 20px); width: calc(100% - 20px);">
+  			<span class="glyphicon glyphicon-exclamation-sign"></span>
+				<strong>ERROR!</strong> <span id="error-msg"></span>
+			</div>
+
+
+
+		  <!-- FOOTER -->
+		  <footer>
+				<hr class="featurette-divider">
+		    <p class="pull-right"><a href="#">Back to top</a></p>
+		    <p>David Waring &copy; 2014.  All Rights Reserved.</p>
+		  </footer>
+
+		</div><!-- /.container -->
+
+
+
+
+
+		<div class="modal fade" id="password-modal">
+		  <div class="modal-dialog">
+		    <div class="modal-content">
+		      <div class="modal-header">
+		        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+		        <h3 class="modal-title">Generated Password</h3>
+		      </div>
+		      <div class="modal-body">
+		        <h4>Your Password Is:</h4>
+						<input type="text" id="generated-password" class="form-control">
+						<div id="messages"></div>
+						<div style="font-size: 14px; text-align: left; margin-top: 20px; margin-left: 10px; margin-right: 10px;">
+							<p id="generated-password-copy-container"><strong>Copy to Clipboard: </strong><span id="generated-password-copy"></span></p>
+							<p><strong>Brute Force Time: </strong><span id="generated-password-time"></span></p>
+						</div>
+		      </div>
+		      <div class="modal-footer">
+		        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+		      </div>
+		    </div><!-- /.modal-content -->
+		  </div><!-- /.modal-dialog -->
+		</div><!-- /.modal -->
+
+
+
+		<!-- script references -->
+		<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.2/jquery.min.js"></script>
+		<script src="/js/bootstrap.min.js"></script>
+		<script src="/js/bootstrap-switch.js"></script>
+		<script src="/js/scripts.js"></script>
+		<script src="/js/pswd-strength.js"></script>
+		<script type="text/javascript">
+			$('#domain').focus();
+
+			$('[data-toggle="tooltip"]').tooltip({
+    		'placement': 'top'
+			});
+
+			$("[name='uppercase']").bootstrapSwitch();
+
+			$("[name='symbols']").bootstrapSwitch();
+			$('input[name="symbols"]').on('switchChange.bootstrapSwitch', function(event, state) {
+  			if ( state ) {
+			  	$('#symbol-chars').removeAttr("disabled");
+				}
+				else {
+					$('#symbol-chars').attr("disabled", "");
+				}
+			});
+
+
+			// Bind enter key on "generate" to replicate mouse click
+			$("#generate").on("keyup", function (event) {
+        if (event.which == 13) {
+            $("#generate").trigger('click');
+        }
+    	});
+
+
+			// Get the user's options and call the generate script
+			function generate() {
+				// Check required arguments: domain, password
+				var domain = $('#domain').val();
+				var password = $('#password').val();
+				var symchars = $("#symbol-chars").val();
+
+				if ( domain == "" ) {
+					throwError("You must enter a domain.");
+				}
+				else if ( password == "" ) {
+					throwError("You must enter a master password.");
+				}
+				else if ( symchars.indexOf("&") > -1 ) {
+					throwError("'&' is not supported as a special character.");
+				}
+				else if ( symchars.indexOf("#") > -1 ) {
+					throwError("'#' is not supported as a special character.");
+				}
+				else {
+					var length = $('#length').find(":selected").text();
+					var passes = $("#hashes").val();
+
+					var caps = "false";
+					if ( $('.bootstrap-switch-id-uppercase').hasClass("bootstrap-switch-on") ) {
+						caps = "true";
+					}
+
+					var symbols = "false";
+					if ( $('.bootstrap-switch-id-symbols').hasClass("bootstrap-switch-on") ) {
+						symbols = "true";
+					}
+
+					// Check for unsupported characters: #, &
+
+
+					var url = "pswd.generate.php?d=" + domain + "&p=" + password + "&n=" + length + "&c=" + caps + "&x=" + passes + "&s=" + symbols + "&t=" + symchars;
+					var jqxhr = $.get(url, function(data) {
+						displayPassword(data);
+					})
+				  .fail(function() {
+				  	throwError("Could not generate password.  Plese try again.")
+				  });
+				}
+			}
+
+
+
+
+			// Generated Password Modal Callbacks
+			function modalHidden(evt) {
+					$("#domain").focus();
+					$("#domain").select();
+
+					$(".password-verdict").remove();
+					$(".progress").remove();
+			}
+			function modalShown(evt) {
+					$("#generated-password").focus();
+					$("#generated-password").select();
+			}
+
+			// Fill in the generated password and show the Modal
+			function displayPassword(password) {
+
+				// Fill in the generated password
+				$('#generated-password').val(password);
+
+				// Set up strength meter
+				var options = {
+					onKeyUp: function (evt) {
+						$(evt.target).pwstrength("outputErrorList");
+					}
+				};
+				$('#generated-password').pwstrength(options);
+
+				// Set up Brute Force Time
+				$('#generated-password').pwdstr('#generated-password-time');
+
+				// Trigger a Key Up Event to start the meter and time
+				$('#generated-password').keyup();
+
+
+				// Add Copy Instructions Based on OS
+				if (navigator.appVersion.indexOf("Win")!=-1) {
+					$('#generated-password-copy').html("Ctrl-C");
+				}
+				else if (navigator.appVersion.indexOf("Mac")!=-1) {
+					$('#generated-password-copy').html("&#8984;-C");
+				}
+				else if (navigator.appVersion.indexOf("Android")!=-1) {
+					$("#generated-password-copy").html("Long-press selected text and select copy");
+				}
+				else if (navigator.appVersion.indexOf("Linux")!=-1) {
+					$('#generated-password-copy').html("Ctrl-C");
+				}
+				else {
+					$('#generated-password-copy').html("");
+				}
+
+
+				// Show the Modal
+				$('#password-modal')
+					.one('shown.bs.modal', null, modalShown) // called on modal show
+					.one('hidden.bs.modal', null, modalHidden) // called on modal hide
+					.modal();
+			}
+
+
+
+			function readCookie(name) {
+				var nameEQ = name + "=";
+				var ca = document.cookie.split(';');
+				for (var i=0;i < ca.length;i++) {
+					var c = ca[i];
+					while (c.charAt(0)==' ') c = c.substring(1,c.length);
+					if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+				}
+				return null;
+			}
+
+			function createCookie(name,value,days) {
+				if (days) {
+					var date = new Date();
+					date.setTime(date.getTime()+(days*24*60*60*1000));
+					var expires = "; expires="+date.toGMTString();
+				}
+				else var expires = "";
+				document.cookie = name+"="+value+expires+"; path=/";
+			}
+
+			function throwError(msg) {
+				// Set error message
+				$("#error-msg").html(msg);
+
+				// Show error alert
+				$("#error").show('slow').delay(2000).hide('slow');
+			}
+		</script>
+	</body>
+</html>

@@ -1,0 +1,277 @@
+#! /usr/bin/env python
+
+VERSION = "2.0"
+
+import os
+import sys
+import getopt
+import hashlib
+import base64
+
+
+# GLOBAL VARIABLE DEFAULT VALUES
+CAPS = 1
+DOMAIN = ""
+LENGTH = 14
+PASSWORD = ""
+PASSES = 250
+SYMBOLS = 0
+SYMBOL_CHARS = "!@$%^*()_-+=<,>.?/"
+VERBOSE = 0
+QUIET = 0
+
+
+def generate(CAPS, DOMAIN, LENGTH, PASSWORD, PASSES, SYMBOLS, SYMBOL_CHARS, QUIET):
+
+    # check for empty arguments
+    if DOMAIN == "":
+        print "Please specify a domain."
+        sys.exit(2)
+    if PASSWORD == "":
+        print "Please specify a master password."
+        sys.exit(2)
+
+    # debugging information...
+    log("CAPS: " + str(CAPS))
+    log("DOMAIN: " + DOMAIN)
+    log("LENGTH: " + str(LENGTH))
+    log("PASSWORD: " + PASSWORD)
+    log("PASSES: " + str(PASSES))
+    log("SYMBOLS: " + str(SYMBOLS))
+    log("SYM_CHARS: " + SYMBOL_CHARS)
+    log("")
+
+    # generate the hash key, hashed PASSES number of times
+    key = DOMAIN + PASSWORD
+    for i in range(0, PASSES):
+        key = hashlib.sha1(key).hexdigest()
+    log("final key: " + key)
+
+    # trim the key to the specified length
+    trimmed = key[:LENGTH]
+    log("trimmed: " + trimmed)
+
+    # generate nums string from the key
+    temp = hashlib.sha1(key + "numbers").hexdigest()
+    nums = ""
+    for i in range(0, len(temp)):
+        if temp[i].isdigit():
+            nums = nums + temp[i]
+
+    # lengthen the number of numbers, to be on the safe side
+    nums = nums + nums + nums + nums + nums
+    num_count = 0
+    log("nums: " + nums)
+
+    # add symbols, if requested
+    symboled = ""
+    if (SYMBOLS == 1):
+        log("")
+        log("adding symbols....")
+
+        # generate a list to work with
+        symboled = list(trimmed)
+
+        # get the number of symbols to add to the password
+        div = int(nums[num_count])
+        num_count = num_count + 1
+        if (div <= 3):
+            div = 4
+        num_of_symbols = LENGTH / div
+        log("num of syms: " + str(num_of_symbols))
+        log("")
+
+        # loop to add symbols
+        for i in range(0, num_of_symbols):
+            log("Adding symbol #" + str(i))
+
+            # get location to add symbol (two digits)
+            location = int(nums[num_count] + nums[num_count+1]) % LENGTH
+            num_count = num_count + 2
+
+            # get the symbol to add (two digits)
+            symbol_loc = int(nums[num_count] + nums[num_count+1]) % len(SYMBOL_CHARS)
+            symbol = SYMBOL_CHARS[symbol_loc]
+            num_count = num_count + 2
+
+            # add the symbol at the location
+            symboled[location] = symbol
+
+            log("location: " + str(location))
+            log("location of symbol: " + str(symbol_loc))
+            log("symbol: " + symbol)
+            log("")
+
+        # generate final 'symbolized' password string
+        symboled = "".join(symboled)
+
+    else:
+        symboled = trimmed
+
+    log("symbolized password: " + symboled)
+
+    # add caps, if requested
+    capsed = ""
+    if (CAPS == 1):
+        log("")
+        log("adding caps...")
+
+        # generate a list to work with
+        capsed = list(symboled)
+
+        # get the number of characters to capitalize in the pswd
+        div = int(nums[num_count])
+        num_count = num_count + 1
+        if (div <= 2):
+            div = 3
+        num_of_caps = LENGTH / div
+        log("number of caps: " + str(num_of_caps))
+        log("")
+
+        # loop to add caps
+        for i in range(0, num_of_caps):
+
+            # get the location to add the cap (two digits)
+            location = int(nums[num_count] + nums[num_count+1]) % LENGTH
+            num_count = num_count + 2
+
+            # make sure to capitalize at least the first location
+            if ( i == 0 ):
+                while( capsed[location] == capsed[location].upper() ):
+                    log("increasing the first caps location")
+                    location = (location + 1) % LENGTH
+
+            log("caps location: " + str(location))
+            log("character: " + capsed[location])
+            log("")
+
+            # try to capitalize the character at the location
+            capsed[location] = capsed[location].upper()
+
+        # return to a string
+        capsed = "".join(capsed)
+
+        # check to see if capsed string is any different
+        if ( capsed == symboled ):
+            log("ERROR: capitalization failed for some reason!")
+
+    else:
+        capsed = symboled
+
+    log("capsed: " + capsed)
+
+    # FINAL PASSWORD
+    password = capsed
+
+    # display final password
+    if ( QUIET == 0 ):
+    	print password
+
+    # copy to clipboard !WILL ONLY WORK ON MAC OS X!
+    os.system('/bin/echo -n "' + password + '" | pbcopy')
+
+
+
+# print debugging messages, if desired
+def log(msg):
+    if ((VERBOSE == 1) and (QUIET == 0)):
+        print ">> " + msg
+
+
+# print usage info and command line options
+def help():
+    print "        Password Generator        "
+    print "Version: " + VERSION
+    print "Written by: David Waring (c) 2011"
+    print "http://purl.org/david.waring"
+    print ""
+    print "USAGE: pswd [options] [arguments] [domain]"
+    print ""
+    print "OPTIONS:"
+    print "  -c, --caps : "
+    print "    toggle the use of caps"
+    print "    DEFAULT = " + str(CAPS)
+    print "  -d, --domain <arg> : *REQUIRED"
+    print "    specify the domain"
+    print "  -h, --help :"
+    print "    display this help message"
+    print "  -n, --length <arg> :"
+    print "    specify the length of the generated password"
+    print "    DEFAULT = " + str(LENGTH)
+    print "  -p, --password <arg> : *REQUIRED"
+    print "    specify the master password"
+    if ( PASSWORD != "" ):
+        print "    DEFAULT = <saved>"
+    print "  -q, --quiet :"
+    print "    hide the generated password (only copy it to clipboard)"
+    print "  -s, --symbols :"
+    print "    toggle the use of symbols"
+    print "  -t, --symchars <arg>"
+    print "    specify the string of characters to use as symbols"
+    print "    DEFAULT = " + SYMBOL_CHARS
+    print "  -v, --verbose :"
+    print "    turn on debugging messages"
+    print "    THIS WILL REVEAL YOUR MASTER PASSWORD"
+    print "  -x, --passes <arg> :"
+    print "    specify the number of times the initial key is hashed"
+    print "    DEFAULT = " + str(PASSES)
+
+
+def main(argv):
+
+    global CAPS
+    global DOMAIN
+    global LENGTH
+    global PASSWORD
+    global PASSES
+    global SYMBOLS
+    global SYMBOL_CHARS
+    global VERBOSE
+    global QUIET
+
+    # PROCESS COMMAND LINE ARGUMENTS
+
+    # define command line options
+    try:
+        opts, args = getopt.getopt(argv, "cd:hn:p:qst:vx:", ["caps", "domain=", "help", "length=", "password=", "quiet", "symbols", "symchars=", "verbose", "passes="])
+    except getopt.GetoptError, err:
+        print "ERROR: " + str(err)
+        sys.exit(2)
+
+
+    # Process options
+    for opt, arg in opts:
+        if opt in ("--caps", "-c"):
+            CAPS = abs(CAPS-1)
+        elif opt in ("--domain", "-d"):
+            DOMAIN = arg
+        elif opt in ("--help", "-h"):
+            help()
+            sys.exit(0)
+        elif opt in ("--length", "-n"):
+            LENGTH = int(arg)
+        elif opt in ("--password", "-p"):
+            PASSWORD = arg
+        elif opt in ("--quiet", "-q"):
+        	QUIET = abs(QUIET-1)
+        elif opt in ("--symbols", "-s"):
+            SYMBOLS = abs(SYMBOLS-1)
+        elif opt in ("--symchars", "-t"):
+            SYMBOL_CHARS = arg
+        elif opt in ("--verbose", "-v"):
+            VERBOSE = abs(VERBOSE-1)
+        elif opt in ("--passes", "-x"):
+            PASSES = int(arg)
+
+
+    # parse domain as argument
+    if len(args) != 0:
+        DOMAIN = args[0]
+
+    generate(CAPS, DOMAIN, LENGTH, PASSWORD, PASSES, SYMBOLS, SYMBOL_CHARS, QUIET)
+
+
+
+# Call main with all args (excluding the command name)
+if __name__ == "__main__":
+    main(sys.argv[1:])
