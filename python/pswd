@@ -1,274 +1,599 @@
 #! /usr/bin/env python
 
-VERSION = "2.0"
+VERSION = "3.0"
+
 
 import os
+import os.path
+from os.path import expanduser
 import sys
 import getopt
 import hashlib
-import base64
-
-
-# GLOBAL VARIABLE DEFAULT VALUES
-CAPS = 1
-DOMAIN = ""
-LENGTH = 14
-PASSWORD = ""
-PASSES = 250
-SYMBOLS = 0
-SYMBOL_CHARS = "!@$%^*()_-+=<,>.?/"
-VERBOSE = 0
-QUIET = 0
-
-
-def generate(CAPS, DOMAIN, LENGTH, PASSWORD, PASSES, SYMBOLS, SYMBOL_CHARS, QUIET):
-
-    # check for empty arguments
-    if DOMAIN == "":
-        print "Please specify a domain."
-        sys.exit(2)
-    if PASSWORD == "":
-        print "Please specify a master password."
-        sys.exit(2)
-
-    # debugging information...
-    log("CAPS: " + str(CAPS))
-    log("DOMAIN: " + DOMAIN)
-    log("LENGTH: " + str(LENGTH))
-    log("PASSWORD: " + PASSWORD)
-    log("PASSES: " + str(PASSES))
-    log("SYMBOLS: " + str(SYMBOLS))
-    log("SYM_CHARS: " + SYMBOL_CHARS)
-    log("")
-
-    # generate the hash key, hashed PASSES number of times
-    key = DOMAIN + PASSWORD
-    for i in range(0, PASSES):
-        key = hashlib.sha1(key).hexdigest()
-    log("final key: " + key)
-
-    # trim the key to the specified length
-    trimmed = key[:LENGTH]
-    log("trimmed: " + trimmed)
-
-    # generate nums string from the key
-    temp = hashlib.sha1(key + "numbers").hexdigest()
-    nums = ""
-    for i in range(0, len(temp)):
-        if temp[i].isdigit():
-            nums = nums + temp[i]
-
-    # lengthen the number of numbers, to be on the safe side
-    nums = nums + nums + nums + nums + nums
-    num_count = 0
-    log("nums: " + nums)
-
-    # add symbols, if requested
-    symboled = ""
-    if (SYMBOLS == 1):
-        log("")
-        log("adding symbols....")
-
-        # generate a list to work with
-        symboled = list(trimmed)
-
-        # get the number of symbols to add to the password
-        div = int(nums[num_count])
-        num_count = num_count + 1
-        if (div <= 3):
-            div = 4
-        num_of_symbols = LENGTH / div
-        log("num of syms: " + str(num_of_symbols))
-        log("")
-
-        # loop to add symbols
-        for i in range(0, num_of_symbols):
-            log("Adding symbol #" + str(i))
-
-            # get location to add symbol (two digits)
-            location = int(nums[num_count] + nums[num_count+1]) % LENGTH
-            num_count = num_count + 2
-
-            # get the symbol to add (two digits)
-            symbol_loc = int(nums[num_count] + nums[num_count+1]) % len(SYMBOL_CHARS)
-            symbol = SYMBOL_CHARS[symbol_loc]
-            num_count = num_count + 2
-
-            # add the symbol at the location
-            symboled[location] = symbol
-
-            log("location: " + str(location))
-            log("location of symbol: " + str(symbol_loc))
-            log("symbol: " + symbol)
-            log("")
-
-        # generate final 'symbolized' password string
-        symboled = "".join(symboled)
-
-    else:
-        symboled = trimmed
-
-    log("symbolized password: " + symboled)
-
-    # add caps, if requested
-    capsed = ""
-    if (CAPS == 1):
-        log("")
-        log("adding caps...")
-
-        # generate a list to work with
-        capsed = list(symboled)
-
-        # get the number of characters to capitalize in the pswd
-        div = int(nums[num_count])
-        num_count = num_count + 1
-        if (div <= 2):
-            div = 3
-        num_of_caps = LENGTH / div
-        log("number of caps: " + str(num_of_caps))
-        log("")
-
-        # loop to add caps
-        for i in range(0, num_of_caps):
-
-            # get the location to add the cap (two digits)
-            location = int(nums[num_count] + nums[num_count+1]) % LENGTH
-            num_count = num_count + 2
-
-            # make sure to capitalize at least the first location
-            if ( i == 0 ):
-                while( capsed[location] == capsed[location].upper() ):
-                    log("increasing the first caps location")
-                    location = (location + 1) % LENGTH
-
-            log("caps location: " + str(location))
-            log("character: " + capsed[location])
-            log("")
-
-            # try to capitalize the character at the location
-            capsed[location] = capsed[location].upper()
-
-        # return to a string
-        capsed = "".join(capsed)
-
-        # check to see if capsed string is any different
-        if ( capsed == symboled ):
-            log("ERROR: capitalization failed for some reason!")
-
-    else:
-        capsed = symboled
-
-    log("capsed: " + capsed)
-
-    # FINAL PASSWORD
-    password = capsed
-
-    # display final password
-    if ( QUIET == 0 ):
-    	print password
-
-    # copy to clipboard !WILL ONLY WORK ON MAC OS X!
-    os.system('/bin/echo -n "' + password + '" | pbcopy')
+import platform
+from subprocess import call, Popen, PIPE
 
 
 
-# print debugging messages, if desired
-def log(msg):
-    if ((VERBOSE == 1) and (QUIET == 0)):
-        print ">> " + msg
+# GLOBAL DEFAULT VARIABLES:
+CACHE_FILE=expanduser("~") + "/.pswd_cache"
+USER=""
+PASSWORD=""
+USER_TOKEN=""
+DOMAIN=""
+LENGTH=14
+K1=10000000
+K2=250
+UPPERCASE=True
+SYMBOLS=True
+SYMBOL_CHARS="!@$*-_.?"
+QUIET=False
 
 
-# print usage info and command line options
-def help():
-    print "        Password Generator        "
-    print "Version: " + VERSION
-    print "Written by: David Waring (c) 2011"
-    print "http://purl.org/david.waring"
-    print ""
-    print "USAGE: pswd [options] [arguments] [domain]"
-    print ""
-    print "OPTIONS:"
-    print "  -c, --caps : "
-    print "    toggle the use of caps"
-    print "    DEFAULT = " + str(CAPS)
-    print "  -d, --domain <arg> : *REQUIRED"
-    print "    specify the domain"
-    print "  -h, --help :"
-    print "    display this help message"
-    print "  -n, --length <arg> :"
-    print "    specify the length of the generated password"
-    print "    DEFAULT = " + str(LENGTH)
-    print "  -p, --password <arg> : *REQUIRED"
-    print "    specify the master password"
-    if ( PASSWORD != "" ):
-        print "    DEFAULT = <saved>"
-    print "  -q, --quiet :"
-    print "    hide the generated password (only copy it to clipboard)"
-    print "  -s, --symbols :"
-    print "    toggle the use of symbols"
-    print "  -t, --symchars <arg>"
-    print "    specify the string of characters to use as symbols"
-    print "    DEFAULT = " + SYMBOL_CHARS
-    print "  -v, --verbose :"
-    print "    turn on debugging messages"
-    print "    THIS WILL REVEAL YOUR MASTER PASSWORD"
-    print "  -x, --passes <arg> :"
-    print "    specify the number of times the initial key is hashed"
-    print "    DEFAULT = " + str(PASSES)
+# Set possible min and max length of password
+MIN_LENGTH = 4
+MAX_LENGTH = 64 # This is set by the return of the hash algorithm
+
+
+USAGE = """PSWD: A pseudo-random password generator
+Version: """ + VERSION + """
+Author: David Waring
+Information: https://pswd.davidwaring.net/
+
+USAGE:
+  """ + os.path.realpath(__file__) + """ --user [user name] --password [master password] --domain [domain]
+REQUIRED ARGUMENTS:
+  -u, --user [user name]: a user name to identify yourself
+  -p, --password [master password]: your master password
+  -d, --domain [domain]: the domain the password will be used for
+OPTIONAL ARGUMENTS:
+  -n [int]: the length of the final password (Default: """ + str(LENGTH) + """)
+      minimum: """ + str(MIN_LENGTH) + """    maximum: """ + str(MAX_LENGTH) + """
+  -c: toggle the use of uppercase letters (Default: """ + str(UPPERCASE) + """)
+  -s: toggle the use of symbols (Default: """ + str(SYMBOLS) + """)
+  -a [symbols]: define possible symbols to include (Default: """ + str(SYMBOL_CHARS) + """)
+  -x [int]: the number of times the user token is hashed (Default: """ + str(K1) + """)
+      the user token is generated once when the script is first run and cached
+      for subsequent uses.  This is designed to take some time to generate.
+  -y [int]: the number of times the generated password is hashed (Default: """ + str(K2) + """)
+      this number can be changed to generate a new password for the same
+      domain while keeping all other settings the same.
+  -q: don't print the password to the console (just copy to clipboard)
+  --cache: location of the user token cache file
+  -h, --help: display this usage information.
+
+If you want to manage the user token yourself (instead of using the cache file):
+  To retrieve or generate a user token:
+    """ + os.path.realpath(__file__) + """ --gettoken --user [user name] --password [master password]
+  When generating a password, add the token in addition to other arguments:
+    -t, --token [user token]: provide your own user token"""
+
+
+
+# Function to display a progress bar
+# progress is the percent progress of the task
+def pb(progress):
+  barLength = 30
+  status = ""
+
+  if isinstance(progress, int):
+    progress = float(progress)
+  if not isinstance(progress, float):
+    progress = 0
+    status = "error: progress var must be float\r\n"
+  if progress < 0:
+    progress = 0
+    status = "Halt...\r\n"
+  if progress >= 1:
+    progress = 1
+    status = "Done...\r\n"
+  block = int(round(barLength*progress))
+  text = "\rBuilding: [{0}] {1}% {2}".format( "="*block + " "*(barLength-block), progress*100, status)
+  sys.stdout.write(text)
+  sys.stdout.flush()
+
+
+
+
+# Get the User Token from the Cache
+# returns the token if one is found for the USER_ID
+# if not found, returns ""
+def getCachedToken():
+  token = ""
+  f = open(CACHE_FILE)
+
+  # read each line of the file
+  for line in iter(f):
+    # split line by the '|'
+    parts = line.split('|')
+    user = parts[0]
+
+    # if user matches the USER_ID...
+    if user == USER_ID:
+      token = parts[1].rstrip()
+  f.close()
+
+  return token
+
+
+
+
+
+# Create a USER_TOKEN by hashing the USER and PASSWORD
+# This is looped K1 times and the number of loops
+# should make this step take a relatively long amount
+# of time to impede brute force attempts.
+def generateUserToken():
+  # create initial hash by concatenating USER and PASSWORD
+  token = USER + PASSWORD
+  prev_per = -1;
+
+  # Hash token K1 times using SHA256
+  if QUIET == False:
+    print "Generating User Token... (This is only done once)"
+  for i in range(0, K1):
+    if QUIET == False:
+      if i % 1000 == 0:
+        per = float(i) / float(K1)
+        pb(per)
+
+    token = hashlib.sha256(token).hexdigest()
+
+  # Save token to cache
+  f = open(CACHE_FILE,'a')
+  f.write(str(USER_ID) + '|' + str(token) + '\n')
+  f.close()
+
+  if QUIET == False:
+    print "";
+
+
+  # Return Final Step 1 Hash
+  return token
+
+
+
+# Try to get a matching token from the cache file
+# If no cached token is found, generate a new one
+def getToken():
+  token = ""
+
+  # Cache File Exists...
+  # Check Cache for User Token
+  if os.path.isfile(CACHE_FILE):
+    token = getCachedToken()
+
+    # No cached User Token was found...
+    # Generate a new User Token
+    if token == "":
+      token = generateUserToken()
+
+  # Cache File Does Not Exist...
+  # Generate a new User Token
+  else:
+    token = generateUserToken()
+
+  return token
+
+
+
+# Create the FINAL password by hashing the DOMAIN,
+# PASSWORD and USER_TOKEN.  This is looped K2 times.
+def generatePassword():
+  key = DOMAIN + PASSWORD + USER_TOKEN
+
+  # Hash the pswd K2 times using SHA256
+  pswd = key
+  for i in range(1, K2+1):
+    pswd = hashlib.sha256(pswd).hexdigest()
+
+
+
+
+  # Trim the password to LENGTH
+  pswd = pswd[:LENGTH]
+
+
+
+
+
+  # generate nums string from the key
+  temp = hashlib.sha1(key + "numbers1").hexdigest() + \
+    hashlib.sha1(key + "numbers2").hexdigest() + \
+    hashlib.sha1(key + "numbers3").hexdigest() + \
+    hashlib.sha1(key + "numbers4").hexdigest()
+
+  # pull out all digits from the hashed string
+  nums = ""
+  for i in range(0, len(temp)):
+      if temp[i].isdigit():
+          nums = nums + temp[i]
+
+  # an index of the number being used from nums
+  num_index = 0
+
+
+
+
+  # add symbols, if requested
+  if SYMBOLS == True:
+
+    # create a list of characters to work with
+    s = list(pswd)
+
+    # get the number of symbols to add to the password
+    # use the length of the password / the first digit
+    div = int(nums[num_index])  # get the first digit
+    num_index = num_index + 1   # increase num index
+    if (div <= 3):              # <= 3 creates too many symbols
+      div = 4                   # divide by at least 4
+    num_of_symbols = LENGTH / div
+
+    # loop to add each symbol
+    for i in range(0, num_of_symbols):
+      # get location to add symbol (two digits)
+      location = int(nums[num_index] + nums[num_index+1]) % LENGTH
+      num_index = num_index + 2
+
+      # get the symbol to add (two digits)
+      symbol_loc = int(nums[num_index] + nums[num_index+1]) % len(SYMBOL_CHARS)
+      symbol = SYMBOL_CHARS[symbol_loc]
+      num_index = num_index + 2
+
+      # add the symbol at the location
+      s[location] = symbol
+
+    # join s to create a string
+    pswd = ''.join(s)
+
+
+
+
+
+
+
+  # add caps, if requested
+  if UPPERCASE == 1:
+
+    # generate a list to work with
+    c = list(pswd)
+
+    # get the number of characters to capitalize in the pswd
+    # use the length of the password / the next digit
+    div = int(nums[num_index])
+    num_index = num_index + 1
+    if (div <= 2):
+      div = 3
+    num_of_caps = LENGTH / div
+
+    # loop to add caps
+    for i in range(0, num_of_caps):
+
+      # get the location to add the cap (two digits)
+      location = int(nums[num_index] + nums[num_index+1]) % LENGTH
+      num_index = num_index + 2
+
+      # make sure to capitalize at least the first location
+      if ( i == 0 ):
+        while( c[location] == c[location].upper() ):
+          location = (location + 1) % LENGTH
+
+      # try to capitalize the character at the location
+      c[location] = c[location].upper()
+
+    # return to a string
+    pswd = "".join(c)
+
+
+
+
+
+  return pswd
+
+
+
+
+
+# Detect the User's OS and use the OS-specific command
+# to copy the password to the clipboard
+# ADAPTED FROM pyperclip (https://pypi.python.org/pypi/pyperclip)
+def copy(text):
+
+  # DETERMINE OS AND USE THE OS-SPECIFIC METHOD FOR COPYING
+  try:
+
+    # Cygwin
+    if 'cygwin' in platform.system().lower():
+      import ctypes
+      text = str(text)
+      GMEM_DDESHARE = 0x2000
+      ctypes.cdll.user32.OpenClipboard(0)
+      ctypes.cdll.user32.EmptyClipboard()
+      try:
+        # works on Python 2 (bytes() only takes one argument)
+        hCd = ctypes.cdll.kernel32.GlobalAlloc(GMEM_DDESHARE, len(bytes(text))+1)
+      except TypeError:
+        # works on Python 3 (bytes() requires an encoding)
+        hCd = ctypes.cdll.kernel32.GlobalAlloc(GMEM_DDESHARE, len(bytes(text, 'ascii'))+1)
+      pchData = ctypes.cdll.kernel32.GlobalLock(hCd)
+      try:
+        # works on Python 2 (bytes() only takes one argument)
+        ctypes.cdll.msvcrt.strcpy(ctypes.c_char_p(pchData), bytes(text))
+      except TypeError:
+        # works on Python 3 (bytes() requires an encoding)
+        ctypes.cdll.msvcrt.strcpy(ctypes.c_char_p(pchData), bytes(text, 'ascii'))
+      ctypes.cdll.kernel32.GlobalUnlock(hCd)
+      ctypes.cdll.user32.SetClipboardData(1, hCd)
+      ctypes.cdll.user32.CloseClipboard()
+
+    # Windows
+    elif os.name == 'nt' or platform.system() == 'Windows':
+      import ctypes
+      text = str(text)
+      GMEM_DDESHARE = 0x2000
+      ctypes.windll.user32.OpenClipboard(0)
+      ctypes.windll.user32.EmptyClipboard()
+      try:
+        # works on Python 2 (bytes() only takes one argument)
+        hCd = ctypes.windll.kernel32.GlobalAlloc(GMEM_DDESHARE, len(bytes(text))+1)
+      except TypeError:
+        # works on Python 3 (bytes() requires an encoding)
+        hCd = ctypes.windll.kernel32.GlobalAlloc(GMEM_DDESHARE, len(bytes(text, 'ascii'))+1)
+      pchData = ctypes.windll.kernel32.GlobalLock(hCd)
+      try:
+        # works on Python 2 (bytes() only takes one argument)
+        ctypes.cdll.msvcrt.strcpy(ctypes.c_char_p(pchData), bytes(text))
+      except TypeError:
+        # works on Python 3 (bytes() requires an encoding)
+        ctypes.cdll.msvcrt.strcpy(ctypes.c_char_p(pchData), bytes(text, 'ascii'))
+      ctypes.windll.kernel32.GlobalUnlock(hCd)
+      ctypes.windll.user32.SetClipboardData(1, hCd)
+      ctypes.windll.user32.CloseClipboard()
+
+    # Mac OS X
+    elif os.name == 'mac' or platform.system() == 'Darwin':
+      text = str(text)
+      p = Popen(['pbcopy', 'w'], stdin=PIPE)
+      try:
+        # works on Python 3 (bytes() requires an encoding)
+        p.communicate(input=bytes(text, 'utf-8'))
+      except TypeError:
+        # works on Python 2 (bytes() only takes one argument)
+        p.communicate(input=bytes(text))
+
+    # Linux
+    elif os.name == 'posix' or platform.system() == 'Linux':
+
+      # Determine which command/module is installed, if any.
+      xclipExists = call(['which', 'xclip'], stdout=PIPE, stderr=PIPE) == 0
+      xselExists = call(['which', 'xsel'], stdout=PIPE, stderr=PIPE) == 0
+
+      gtkInstalled = False
+      try:
+        import gtk
+        gtkInstalled = True
+      except ImportError:
+        pass
+
+      if not gtkInstalled:
+        PyQt4Installed = False
+        try:
+          import PyQt4.QtCore
+          import PyQt4.QtGui
+          PyQt4Installed = True
+        except ImportError:
+          pass
+
+      # Set one of the copy & paste functions.
+      if xclipExists:
+        p = Popen(['xclip', '-selection', 'c'], stdin=PIPE)
+        try:
+          # works on Python 3 (bytes() requires an encoding)
+          p.communicate(input=bytes(text, 'utf-8'))
+        except TypeError:
+          # works on Python 2 (bytes() only takes one argument)
+          p.communicate(input=bytes(text))
+
+      elif gtkInstalled:
+        global cb
+        text = str(text)
+        cb = gtk.Clipboard()
+        cb.set_text(text)
+        cb.store()
+
+      elif PyQt4Installed:
+        app = PyQt4.QtGui.QApplication([])
+        cb = PyQt4.QtGui.QApplication.clipboard()
+        text = str(text)
+        cb.setText(text)
+
+      elif xselExists:
+        p = Popen(['xsel', '-i'], stdin=PIPE)
+        try:
+          # works on Python 3 (bytes() requires an encoding)
+          p.communicate(input=bytes(text, 'utf-8'))
+        except TypeError:
+          # works on Python 2 (bytes() only takes one argument)
+          p.communicate(input=bytes(text))
+  except:
+    pass
+
+
 
 
 def main(argv):
 
-    global CAPS
-    global DOMAIN
-    global LENGTH
-    global PASSWORD
-    global PASSES
-    global SYMBOLS
-    global SYMBOL_CHARS
-    global VERBOSE
-    global QUIET
+  # Global Variables
+  global USER
+  global PASSWORD
+  global DOMAIN
+  global LENGTH
+  global UPPERCASE
+  global SYMBOLS
+  global SYMBOL_CHARS
+  global K1
+  global K2
+  global QUIET
+  global CACHE_FILE
+  global USER_ID
+  global USER_TOKEN
+  GEN_TOKEN = False
 
-    # PROCESS COMMAND LINE ARGUMENTS
 
-    # define command line options
-    try:
-        opts, args = getopt.getopt(argv, "cd:hn:p:qst:vx:", ["caps", "domain=", "help", "length=", "password=", "quiet", "symbols", "symchars=", "verbose", "passes="])
-    except getopt.GetoptError, err:
-        print "ERROR: " + str(err)
+
+
+  # ========= PROCESS COMMAND LINE OPTIONS ========= #
+
+
+  # define command line options
+  try:
+    opts, args = getopt.getopt(argv, "u:p:d:n:csa:t:x:y:qh", ["user=", "password=", "domain=", "token=", "cache=", "gettoken", "help"])
+  except getopt.GetoptError, err:
+    print "ERROR: " + str(err)
+    print USAGE
+    sys.exit(2)
+
+
+  # Process options
+  for opt, arg in opts:
+    if opt in ("--user", "-u"):
+      USER = arg
+    elif opt in ("--password", "-p"):
+      PASSWORD = arg
+    elif opt in ("--domain", "-d"):
+      DOMAIN = arg
+    elif opt in ("-n"):
+      try:
+        LENGTH = int(arg)
+      except ValueError:
+        print "ERROR: length must be an integer"
         sys.exit(2)
+    elif opt in ("-c"):
+      UPPERCASE = not UPPERCASE
+    elif opt in ("-s"):
+      SYMBOLS = not SYMBOLS
+    elif opt in ("-a"):
+      SYMBOL_CHARS = arg
+    elif opt in ("-x"):
+      try:
+        K1 = int(arg)
+      except ValueError:
+        print "ERROR: -x must be an integer"
+        sys.exit(2)
+    elif opt in ("-y"):
+      try:
+        K2 = int(arg)
+      except ValueError:
+        print "ERROR: -y must be an integer"
+        sys.exit(2)
+    elif opt in ("-q"):
+      QUIET = True
+    elif opt in ("--cache"):
+      CACHE_FILE = arg
+    elif opt in ("--gettoken"):
+      GEN_TOKEN = True
+    elif opt in ("--token", "-t"):
+      USER_TOKEN = arg
+    elif opt in ("--help", "-h"):
+      print USAGE
+      sys.exit(0)
 
 
-    # Process options
-    for opt, arg in opts:
-        if opt in ("--caps", "-c"):
-            CAPS = abs(CAPS-1)
-        elif opt in ("--domain", "-d"):
-            DOMAIN = arg
-        elif opt in ("--help", "-h"):
-            help()
-            sys.exit(0)
-        elif opt in ("--length", "-n"):
-            LENGTH = int(arg)
-        elif opt in ("--password", "-p"):
-            PASSWORD = arg
-        elif opt in ("--quiet", "-q"):
-        	QUIET = abs(QUIET-1)
-        elif opt in ("--symbols", "-s"):
-            SYMBOLS = abs(SYMBOLS-1)
-        elif opt in ("--symchars", "-t"):
-            SYMBOL_CHARS = arg
-        elif opt in ("--verbose", "-v"):
-            VERBOSE = abs(VERBOSE-1)
-        elif opt in ("--passes", "-x"):
-            PASSES = int(arg)
 
 
-    # parse domain as argument
-    if len(args) != 0:
-        DOMAIN = args[0]
 
-    generate(CAPS, DOMAIN, LENGTH, PASSWORD, PASSES, SYMBOLS, SYMBOL_CHARS, QUIET)
+
+  # Get User ID based on hash of USER
+  USER_ID = hashlib.sha256(USER).hexdigest()
+
+
+
+
+
+  # ========= REQUESTING JUST A USER TOKEN ========= #
+
+  if GEN_TOKEN == True:
+
+    # Parameter Checks
+    # Need USER and PASSWORD
+    if USER == "":
+      print "ERROR: user name must be provided with --user [user name]"
+      sys.exit(2)
+    elif PASSWORD == "":
+      print "ERROR: master password must be provided with --password [master password]"
+      sys.exit(2)
+
+    # Get or Generate a USER TOKEN
+    USER_TOKEN = getToken()
+
+    print USER_TOKEN
+
+    sys.exit(0)
+
+
+
+
+
+
+
+
+  # ========= PARAMETER CHECKS ========= #
+
+  # Make sure USER and PASSWORD and DOMAIN are supplied
+  if USER == "":
+    print "ERROR: user name must be provided with --user [user name]"
+    sys.exit(2)
+  elif PASSWORD == "":
+    print "ERROR: master password must be provided with --password [master password]"
+    sys.exit(2)
+  elif DOMAIN == "":
+    print "ERROR: the domain must be provided with --domain [domain]"
+    sys.exit(2)
+
+
+  # Check LENGTH is within range
+  if LENGTH < MIN_LENGTH:
+    print "ERROR: the length cannot be less than " + str(MIN_LENGTH)
+    sys.exit(2)
+  elif LENGTH > MAX_LENGTH:
+    print "ERROR: the length cannot be greater than " + str(MAX_LENGTH)
+    sys.exit(2)
+
+
+  # remove white space and force lowercase to domain
+  DOMAIN = ''.join(DOMAIN.split())
+  DOMAIN = DOMAIN.lower()
+
+
+
+
+
+  # ========= GET OR GENERATE A USER TOKEN ========= #
+
+  # If user did not supply a token...
+  if USER_TOKEN == "":
+
+    USER_TOKEN = getToken();
+
+
+
+
+
+
+
+
+  # ========= GENERATE THE PASSWORD ========= #
+
+  FINAL = generatePassword()
+
+
+  if QUIET == False:
+    print FINAL
+
+  # Attempt to copy the password to the user's clipboard
+  copy(FINAL)
+
+
+
 
 
 

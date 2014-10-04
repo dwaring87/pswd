@@ -83,50 +83,44 @@
 		<div class="container content">
 
 			<div class="container" style="text-align: center; margin: 20px;">
-				<h1>PSWD <small><span class="label label-warning">Version 2</span></small></h1>
+				<h1>PSWD</h1>
 				<h3>A pseudo-random password generator</h3>
 			</div>
 
 
-			<h4 style="cursor:pointer; float: left;" onclick="$('#details').slideToggle();"><span class="glyphicon glyphicon-info-sign"></span>&nbsp;&nbsp;What is PSWD?</h4>
-			<h5 class="hidden-xs" style="cursor:pointer; float: right;" onclick="window.open('pswd2.py');"><span class="glyphicon glyphicon-download-alt"></span>&nbsp;&nbsp;Download Python script</h5>
-			<div style="height: 0px; clear: both;"></div>
+			<div style="max-width: 700px; margin: auto;">
 
-			<div class="well" id="details" style="display:none;">
-				<p><strong>PSWD</strong> is a <strong>pseudo-random password generator</strong> that allows you to generate unique passwords for
-					different websites.</p>
-				<p>This program generates a seemingly random string of numbers, letters and special characters given a master password and a
-					domain.  When given the same master password and domain (using the same set of options), the script will generate the same password (meaning
-					there's no need to save or store your passwords since they can be regenerated when needed).  The master password is a secret key that you
-					create and use to generate unique passwords for yourself.  By entering the domain (for example: google.com) you can create a different
-					password for each website you visit.</p>
-				<p>The script has a number of options to customize the generated password:
-					<ul>
-						<li>Password length</li>
-						<li>Include lowercase and uppercase letters</li>
-						<li>Include symbols</li>
-						<li>Define the symbols to choose from</li>
-						<li>The number of hashes to use to generate the password</li>
-					</ul>
-				</p>
+			<h4 style="cursor:pointer; float: left;" onclick="window.location='info.html';"><span class="glyphicon glyphicon-info-sign"></span>&nbsp;&nbsp;What is PSWD?</h4>
+
+			<div class="btn-group pull-right">
+				<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+					<span class="glyphicon glyphicon-cog"></span>&nbsp;&nbsp;<span class="caret"></span>
+				</button>
+				<ul class="dropdown-menu" role="menu">
+					<li><a href="#" onclick="window.open('pswd.py');"><span class="glyphicon glyphicon-download-alt"></span>&nbsp;&nbsp;Download Python script</a></li>
+					<li><a href="#" onclick="resetDefaults(false);"><span class="glyphicon glyphicon-refresh"></span>&nbsp;&nbsp;Reset Default Settings</a></li>
+					<li class="divider"></li>
+					<li><a href="#" onclick="logout(true, false);"><span class="glyphicon glyphicon-trash"></span>&nbsp;&nbsp;Logout and Erase User Token</a></li>
+					<li><a href="#" onclick="logout(false, false);"><span class="glyphicon glyphicon-user"></span>&nbsp;&nbsp;Logout</a></li>
+				</ul>
 			</div>
+
+			<div style="height: 0px; clear: both;"></div>
 
 			<br />
 			<br />
 
 			<div class="panel panel-primary">
 			  <div class="panel-heading">
-			    <h3 class="panel-title">Basic Options</h3>
+			    <h3 class="panel-title">Basic Options
+						<span class="pull-right" id="user-info"></span>
+					</h3>
 			  </div>
 			  <div class="panel-body">
 
 				  <div class="form-group">
 				    <label for="domain">Domain</label><a href="#domain" data-toggle="tooltip" title="Enter the domain (ex: google.com) of the website the password is going to be used for"><span class="glyphicon glyphicon-question-sign" style="margin-left: 10px;" tabindex="5"></span></a>
 				    <input type="url" class="form-control" id="domain" placeholder="Enter Domain (ex: google.com)" tabindex="1">
-				  </div>
-				  <div class="form-group">
-				    <label for="password">Master Password</label><a href="#password" data-toggle="tooltip" title="Enter your master password - the secret key you create to make the passwords unique for yourself"><span class="glyphicon glyphicon-question-sign" style="margin-left: 10px;" tabindex="6"></span></a>
-				    <input type="password" class="form-control" id="password" placeholder="Master Password" tabindex="2">
 				  </div>
 					<div class="form-group">
 						<label for="length">Length</label><a href="#length" data-toggle="tooltip" title="The number of characters in the final password"><span class="glyphicon glyphicon-question-sign" style="margin-left: 10px;" tabindex="7"></span></a>
@@ -143,7 +137,7 @@
 							<option>11</option>
 							<option>12</option>
 							<option>13</option>
-							<option selected="true">14</option>
+							<option>14</option>
 							<option>15</option>
 							<option>16</option>
 							<option>17</option>
@@ -172,6 +166,28 @@
 							<option>40</option>
 							<option>41</option>
 							<option>42</option>
+							<option>43</option>
+							<option>44</option>
+							<option>45</option>
+							<option>46</option>
+							<option>47</option>
+							<option>48</option>
+							<option>49</option>
+							<option>50</option>
+							<option>51</option>
+							<option>52</option>
+							<option>53</option>
+							<option>54</option>
+							<option>55</option>
+							<option>56</option>
+							<option>57</option>
+							<option>58</option>
+							<option>59</option>
+							<option>60</option>
+							<option>61</option>
+							<option>62</option>
+							<option>63</option>
+							<option>64</option>
 					  </select>
 					</div>
 
@@ -180,6 +196,7 @@
 
 
 
+			<!-- ********* ADVANCED OPTIONS ********* -->
 
 			<div class="panel panel-info">
 				<div class="panel-heading" style="cursor:pointer;" onclick="$('#options').slideToggle();">
@@ -190,7 +207,7 @@
 					<div class="form-group" id="uppercase-group">
 						<label for="uppercase">Uppercase Letters</label><a href="#uppercase" data-toggle="tooltip" title="Turn on to allow uppercase letters in the generated password"><span class="glyphicon glyphicon-question-sign" style="margin-left: 10px;"></span></a>
 						<br />
-						<input type="checkbox" id="uppercase" name="uppercase" checked>
+						<input type="checkbox" id="uppercase" name="uppercase">
 					</div>
 
 					<div class="form-group" id="symbols-group">
@@ -201,23 +218,32 @@
 
 					<div class="form-group">
 						<label for="symbol-chars">Symbol Characters</label><a href="#symbol-chars" data-toggle="tooltip" title="Enter the special characters that can be used as symbols.  '#' and '&amp;' are not supported."><span class="glyphicon glyphicon-question-sign" style="margin-left: 10px;"></span></a>
-						<input type="text" class="form-control" id="symbol-chars" value="!@$%^*()_-+=&lt;,&gt;.?/" disabled >
+						<input type="text" class="form-control" id="symbol-chars">
 					</div>
 
 					<div class="form-group">
 						<label for="hashes">Number of Hashes</label><a href="#hashes" data-toggle="tooltip" title="Enter the number of times the password is hashed"><span class="glyphicon glyphicon-question-sign" style="margin-left: 10px;"></span></a>
-						<input type="number" class="form-control" id="hashes" value="250">
+						<input type="number" class="form-control" id="hashes" value="">
 					</div>
 
 
 				</div>
 			</div>
 
+
+
+
+			<!-- ********* GENERATE BUTTON ********* -->
+
 			<div class="well-sm">
-				<a id="generate" onclick="generate();" class="btn btn-success btn-lg btn-block" role="button" tabindex="4"><span class="glyphicon glyphicon-lock" style="margin-right: 15px;"></span>Generate Password</a>
+				<a id="generate" onclick="generate();" class="btn btn-success btn-lg btn-block" role="button" tabindex="4" style="max-width: 500px; margin: auto;"><span class="glyphicon glyphicon-lock" style="margin-right: 15px"></span>Generate Password</a>
 			</div>
 
 
+			</div>
+
+
+			<!-- ********* ERROR ALERT ********* -->
 
 			<div id="error" class="alert alert-danger" role="alert" style="z-index: 9999; display: none; position: fixed; bottom: 0px; left: 10px; width: -moz-calc(100% - 20px); width: -webkit-calc(100% - 20px); width: calc(100% - 20px);">
   			<span class="glyphicon glyphicon-exclamation-sign"></span>
@@ -226,18 +252,163 @@
 
 
 
-		  <!-- FOOTER -->
+
+		  <!-- ********* FOOTER ********* -->
+
 		  <footer>
 				<hr class="featurette-divider">
 		    <p class="pull-right"><a href="#">Back to top</a></p>
 		    <p>David Waring &copy; 2014.  All Rights Reserved.</p>
 		  </footer>
 
-		</div><!-- /.container -->
+		</div>
 
 
 
 
+		<!-- ********* LOGIN MODAL DIALOG ********* -->
+
+		<div class="modal fade" id="login-modal">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-body">
+
+			  		<h4 style="border-bottom: 1px solid #c5c5c5;">
+			    		<i class="glyphicon glyphicon-user"></i>
+			    		User Login
+			  		</h4>
+
+
+
+						<!-- Username and Password Prompt -->
+
+						<div style="padding: 20px;" id="login-form">
+
+							<p class="text-left">
+								<small>
+									Enter your:
+									<ul class="text-left">
+										<li><b>User Name</b> a nickname or email address to identify yourself</li>
+										<li><b>Master Password</b> a very strong password that you use to generate all
+											site-specific passwords.</li>
+									</ul>
+									<i>No registration is necessary, just use the same User Name and Master Password
+										each time you generate a password.</i>
+								</small>
+							</p>
+
+							<br />
+
+						  <form accept-charset="UTF-8" role="form" method="post">
+								<fieldset>
+									<div class="form-group input-group">
+										<span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
+										<input id="username" class="form-control" placeholder="User Name" name="username" required="" autofocus="">
+									</div>
+
+									<div class="form-group input-group">
+										<span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
+										<input id="masterpassword" class="form-control" placeholder="Master Password" name="masterpassword" type="password" value="" required="">
+									</div>
+
+									<div class="form-group">
+										<button id="continue" class="btn btn-primary btn-block">Continue</button>
+										<p class="help-block">
+											<a class="pull-right text-muted" href="#" id="login-info-show"><small>What is this?</small></a>
+										</p>
+									</div>
+								</fieldset>
+							</form>
+						</div>
+
+
+
+						<!-- More Info Screen -->
+
+						<div style="display: none;" id="login-info">
+							<br />
+
+					    <h4 class="">
+					    	What is PSWD?
+					    </h4>
+
+			        <p class="text-left"><small>
+								<b>PSWD</b> is a pseudo-random password generator that creates seemingly random
+								site-specific passwords.  It uses two steps of cryptographic hashing (SHA-256) to first
+								create a user-specific token (using a username and master password) and then a
+								site-specific password (using the token, master password and domain).
+								<br /><br />
+								When given the same set of inputs (same user name, master password and domain) the
+								program will generate the same password.  This means your passwords don't need to be stored
+								on your computer or on any third-party server.  This server does not log or store any information
+								about any of the passwords generated.
+								<hr />
+								<a href="info.html">More information and other implementations of this program</a>
+								<hr />
+							</small></p>
+			        <p class="help-block">
+			          <a class="text-muted" href="#" id="login-info-hide"><small>User Login</small></a>
+			        </p>
+				  	</div>
+
+
+
+						<!-- Verify Master Password / Generate User Token -->
+
+						<div style="display: none;" id="login-gen">
+							<br />
+
+							<h4 class="">
+								Generating User Token
+							</h4>
+
+							<p class="text-left"><small>
+								This is the first step of generating your password.  This is designed to take a significant
+								amount of time (up to a few minutes) in order to deter a brute force attack from attempting to
+								learn your master password.  This will only need to be done once since the user token will be
+								cached (locally on your machine as a cookie - no information is stored on this server).
+							</small></p>
+
+							<hr />
+
+							<h4>Verify Master Password</h4>
+
+							<form accept-charset="UTF-8" role="form" method="post">
+								<fieldset>
+									<div class="form-group input-group">
+										<span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
+										<input id="masterpassword-verify" class="form-control" placeholder="Re-enter Master Password" name="masterpassword-verify" type="password" value="" required="" autofocus="">
+									</div>
+
+									<div style="height: 50px">
+										<div class="btn-group" id="generateButtonGroup">
+										  <button id="login-gen-return" type="button" class="btn btn-info"><i class="glyphicon glyphicon-arrow-left"></i></button>
+										  <button id="generateUserToken" class="btn btn-primary">Generate User Token</button>
+										</div>
+
+										<br />
+
+										<div id="generatep" class="progress" style="display: none;">
+											<div id="generatepb" class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%"></div>
+										</div>
+									</div>
+								</fieldset>
+							</form>
+						</div>
+
+					</div>
+
+
+				</div><!-- /.modal-content -->
+			</div><!-- /.modal-dialog -->
+		</div><!-- /.modal -->
+
+
+
+
+
+
+		<!-- ********* PASSWORD DISPLAY MODAL DIALOG ********* -->
 
 		<div class="modal fade" id="password-modal">
 		  <div class="modal-dialog">
@@ -249,11 +420,27 @@
 		      <div class="modal-body">
 		        <h4>Your Password Is:</h4>
 						<input type="text" id="generated-password" class="form-control">
-						<div id="messages"></div>
-						<div style="font-size: 14px; text-align: left; margin-top: 20px; margin-left: 10px; margin-right: 10px;">
+
+						<div style="font-size: 14px; text-align: left; margin-top: 10px; margin-left: 0px; margin-right: 10px;">
 							<p id="generated-password-copy-container"><strong>Copy to Clipboard: </strong><span id="generated-password-copy"></span></p>
-							<p><strong>Brute Force Time: </strong><span id="generated-password-time"></span></p>
 						</div>
+
+						<div id="strength-container" class="container-fluid" style="margin-top: 25px;">
+							<p class="pull-left"><b>Complexity:</b>&nbsp;&nbsp;
+								<a href="#complexity" data-toggle="tooltip" title="Complexity is based on the length of and the number of different types of characters in the password"><span class="glyphicon glyphicon-question-sign"></span></a>
+							</p>
+							<div class="row">
+								<div class="col-sm-10">
+									<div id="strengthpb" class="progress">
+										<div id="strength" class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%;"></div>
+									</div>
+								</div>
+								<div class="col-sm-2">
+									<span id="complexity"></span>
+								</div>
+							</div>
+						</div>
+
 		      </div>
 		      <div class="modal-footer">
 		        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -264,52 +451,566 @@
 
 
 
+
+
+		<!-- ********* CONFIRM RESET DEFAULTS MODAL DIALOG ********* -->
+
+		<div class="modal fade" id="confirm-reset" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="myModalLabel">Reset Settings</h4>
+                </div>
+
+                <div class="modal-body">
+                    <p>This will reset all password settings to their default values.</p>
+                    <p>Do you want to proceed?</p>
+                    <p class="debug-url"></p>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    <a href="#" onclick="resetDefaults(true);" class="btn btn-danger danger">Reset</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+		<!-- ********* CONFIRM ERASE USER TOKEN DIALOG ********* -->
+
+		<div class="modal fade" id="confirm-erase" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+				<div class="modal-dialog">
+						<div class="modal-content">
+
+								<div class="modal-header">
+										<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+										<h4 class="modal-title" id="myModalLabel">Erase User Token</h4>
+								</div>
+
+								<div class="modal-body">
+										<p>This will erase the cached user token for this user.  The token will need to be regenerated the next time you login.</p>
+										<p>Do you want to proceed?</p>
+										<p class="debug-url"></p>
+								</div>
+
+								<div class="modal-footer">
+										<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+										<a href="#" onclick="logout(true, true);" class="btn btn-danger danger">Erase</a>
+								</div>
+						</div>
+				</div>
+		</div>
+
+
+
+
 		<!-- script references -->
 		<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.2/jquery.min.js"></script>
 		<script src="/js/bootstrap.min.js"></script>
 		<script src="/js/bootstrap-switch.js"></script>
 		<script src="/js/scripts.js"></script>
-		<script src="/js/pswd-strength.js"></script>
+		<script src="/js/sha256.js"></script>
+		<script type="text/javascript" src="/js/jquery.complexify.js"></script>
 		<script type="text/javascript">
-			$('#domain').focus();
 
-			$('[data-toggle="tooltip"]').tooltip({
-    		'placement': 'top'
+
+			// ********* DEFAULT SETTINGS ********* //
+
+			var DEFAULT_LENGTH = 14;
+			var DEFAULT_CAPS = "true";
+			var DEFAULT_SYMBOLS = "true";
+			var DEFAULT_SYMCHARS = "!@$*-_.?";
+			var DEFAULT_K2 = 250;
+
+
+			// ********* USER SETTINGS ********* //
+			var USERNAME = "";
+			var PASSWORD = "";
+			var ENCRYPTED_USER_TOKEN = "";
+
+
+
+			// ********* ON PAGE LOAD ********* //
+
+			$(document).ready(function() {
+
+
+
+				// Launch the Login Modal Dialog
+				launchLogin();
+
+
+
+				// LOGIN DIALOG CLICK LISTENERS
+
+				// Show More Info
+				// From username and password prompt
+				// To more info screen
+				$('#login-info-show').click(function(e) {
+			    e.preventDefault();
+			    $('div#login-form').hide('500');
+					$('div#login-info').show('500');
+			  });
+
+				// Hide More Info
+				// From more info screen
+				// To username and password prompt
+			  $('#login-info-hide').click(function(e) {
+			    e.preventDefault();
+			    $('div#login-form').show('500');
+					$('div#login-info').hide('500');
+			  });
+
+				// Continue Login
+				// From username and password prompt
+				// To verify password
+				$('#continue').on('click', function(event) {
+  				event.preventDefault();
+
+					// Update and Disable 'Continue' Button
+					$('#continue').html("Logging In...");
+					$('#continue').prop("disabled", true);
+
+					// Get username and password
+					var username = $('#username').val();
+					var password = $("#masterpassword").val();
+
+					// Check inputs
+					if ( username == "" ) {
+						throwError("Enter a User Name");
+						$('#continue').html("Continue");
+						$('#continue').prop("disabled", false);
+						return;
+					}
+					else if ( password == "" ) {
+						throwError("Enter a Master Password");
+						$('#continue').html("Continue");
+						$('#continue').prop("disabled", false);
+						return;
+					}
+
+					// Username and Password entered,
+					// process initial login
+					else {
+						login(username, password);
+					}
+				});
+
+
+				// Return to Login
+				// From verify password
+				// To username and password prompt
+				$('#login-gen-return').click(function(e) {
+					e.preventDefault();
+
+					$('#continue').html("Log In");
+					$('#continue').prop("disabled", false);
+
+					$('div#login-form').toggle('500');
+					$('div#login-gen').toggle('500');
+				});
+
+
+				// Start Token Generation
+				// Verify passwords are the same
+				// If they match, start to generate a user token
+				$('#generateUserToken').on('click', function(event) {
+					event.preventDefault();
+
+					// Make sure password entries match
+					var password1 = $('#masterpassword').val();
+					var password2 = $('#masterpassword-verify').val();
+
+					// Passwords match
+					// Start the user token generation process
+					if ( password1 == password2 ) {
+						$('#generateButtonGroup').hide('500');
+						$('#generatep').show('500');
+
+						generateToken($('#username').val(), $("#masterpassword").val());
+					}
+
+					// Passwords don't match
+					else {
+						throwError("Password Does Not Match");
+					}
+				});
 			});
 
-			$("[name='uppercase']").bootstrapSwitch();
 
-			$("[name='symbols']").bootstrapSwitch();
-			$('input[name="symbols"]').on('switchChange.bootstrapSwitch', function(event, state) {
-  			if ( state ) {
-			  	$('#symbol-chars').removeAttr("disabled");
+
+
+			// ********* LOGIN FUNCTIONS ********* //
+
+
+			// LAUNCH LOGIN
+			// Show the login modal dialog
+			function launchLogin() {
+				// Reset visible divs
+				$('div#login-form').show('500');
+				$('div#login-info').hide('500');
+				$('div#login-gen').hide('500');
+				$('#generateButtonGroup').show('500');
+				$('#generatep').hide('500');
+				update(0);
+
+				// Reset username and password fields
+				$('#username').val("");
+				$('#masterpassword').val("");
+				$('#masterpassword-verify').val("");
+				$('#masterpassword-verify').prop("disabled", false);
+
+				// Reset Login Button
+				$('#continue').html("Continue");
+				$('#continue').prop("disabled", false);
+
+				// Show Login Dialog
+				$('#login-modal').modal({
+					keyboard: false,
+					backdrop: 'static'
+				});
+
+				// Set keyboard focus on username input
+				$('#username').focus();
+
+
+
+				// Tool tips
+				$('[data-toggle="tooltip"]').tooltip({
+					'placement': 'top'
+				});
+
+				$("[name='uppercase']").bootstrapSwitch();
+
+				$("[name='symbols']").bootstrapSwitch();
+				$('input[name="symbols"]').on('switchChange.bootstrapSwitch', function(event, state) {
+					if ( state ) {
+						$('#symbol-chars').removeAttr("disabled");
+					}
+					else {
+						$('#symbol-chars').attr("disabled", "");
+					}
+				});
+
+
+				// Bind enter key on "generate" to replicate mouse click
+				$("#generate").on("keyup", function (event) {
+					if (event.which == 13) {
+							$("#generate").trigger('click');
+					}
+				});
+			}
+
+
+			// LOGIN FUNCTION
+			// check for a user token in the cookies
+			// if no token is found, start to generate one
+			function login(username, password) {
+
+				// Create the User ID
+				var user_id = Sha256.hash(username);
+
+				// Check to see if there's a cached user token
+				var cache = readCookie(user_id);
+
+				// No cache found...
+				if ( cache == "" ) {
+					// Show the token generator form
+					$('div#login-form').toggle('500');
+					$('div#login-gen').toggle('500');
+					$('#masterpassword-verify').focus();
+ 				}
+
+				// Cache found...
+				else {
+					completeLogin(username, password, cache);
+				}
+			}
+
+
+
+			// GENERATE USER TOKEN
+			function generateToken(username, password) {
+
+				// Start the Generate Process
+				var jqxhr = $.post("token.php", {
+					cmd: "start",
+					username: username,
+					password: password
+				}).done(function( data ) {
+					$('#masterpassword-verify').prop('disabled', true);
+
+					var key = data;
+					trackToken(username, password, key);
+				}).fail(function() {
+					$('#masterpassword-verify').prop('disabled', false);
+					throwError("Could not start process to generate user token.  Please try again.")
+				});
+
+			}
+
+
+			// TRACK USER TOKEN GENERATION
+			function trackToken(username, password, key) {
+
+				// Check key every 1 sec until complete
+				// timeout after 10 minutes (600 seconds)
+				var count = 0;
+				var timeout = 600;
+
+				var intervalID;
+				var looper = function() {
+					count++;
+
+     			if ( count < timeout ) {
+
+						// Get the progress
+						var jqxhr = $.post("token.php", {
+							cmd: "track",
+							key: key
+						}).done(function( data ) {
+							// Complete
+							if ( data.indexOf("complete") > -1 ) {
+								clearInterval(intervalID)
+								update(100);
+
+								var token = data.replace("complete", "");
+								token = token.replace(/(\r\n|\n|\r)/gm,"");
+
+								finalizeToken(username, password, key, token);
+							}
+
+							// Update Progress Bar
+							else {
+								update(data);
+							}
+						});
+
+     			}
+					else {
+						throwError("User Token Generation timed out.  Please try again.");
+						$('#generateUserToken').html("Please Try Again");
+						$('#generateButtonGroup').toggle('500');
+						$('#generatep').toggle('500');
+						$('#masterpassword-verify').prop('disabled', false);
+
+          	clearInterval(intervalID);
+     			}
+				};
+
+     		intervalID = setInterval(looper, 1000);
+			}
+
+
+			// FINALIZE TOKEN GENERATION
+			function finalizeToken(username, password, key, token) {
+
+				// Clear the token
+				var jqxhr = $.post("token.php", {
+					cmd: "clear",
+					key: key
+				}).done(function( data ) {
+					console.log(data);
+				});
+
+				// Create the User ID
+				var user_id = Sha256.hash(username);
+
+				// Get encrypted token
+				var jqxhr = $.post("encrypt.php", {
+					user: user_id,
+					token: token
+				}).done(function( encrypted_token ) {
+					console.log(encrypted_token);
+
+					// Save encrypted token to cookie
+					createCookie(user_id, encrypted_token, 365);
+
+					// Complete Login
+					completeLogin(username, password, encrypted_token);
+				});
+			}
+
+
+			// UPDATE TOKEN GENERATION PROGRESS BAR
+			function update(percent) {
+				percent = Math.round(percent);
+				$('#generatepb').css('width', percent+'%').attr('aria-valuenow', percent);
+			}
+
+
+			// COMPLETE LOGIN
+			// hide the login modal dialog
+			// set global vars
+			// display username
+			function completeLogin(username, password, encrypted_token) {
+				// Set session variables
+				ENCRYPTED_USER_TOKEN = encrypted_token;
+				USERNAME = username;
+				PASSWORD = password;
+
+				// Display Username
+				$('#user-info').html('<span class="glyphicon glyphicon-user"></span>&nbsp;&nbsp;' + username + '</span>');
+
+				// Set up Default Variables
+				var length = readCookie('n');
+				if ( length == "" ) {
+					length = DEFAULT_LENGTH;
+				}
+				$('#length option').eq(length-4).prop('selected', true);
+
+				var caps = readCookie('c');
+				if ( caps == "" ) {
+					caps = DEFAULT_CAPS;
+				}
+				if ( caps == "true" ) {
+					$('#uppercase').bootstrapSwitch('state', true);
 				}
 				else {
-					$('#symbol-chars').attr("disabled", "");
+					$('#uppercase').bootstrapSwitch('state', false);
 				}
-			});
+
+				var symbols = readCookie('s');
+				if ( symbols == "" ) {
+					symbols = DEFAULT_SYMBOLS;
+				}
+				if ( symbols == "true" ) {
+					$('#symbols').bootstrapSwitch('state', true);
+				}
+				else {
+					$('#symbols').bootstrapSwitch('state', false);
+				}
+
+				var symchars = readCookie('a');
+				if ( symchars == "" ) {
+					symchars = DEFAULT_SYMCHARS;
+				}
+				$('#symbol-chars').val(symchars);
+
+				var k2 = readCookie('y');
+				if ( k2 == "" ) {
+					k2 = DEFAULT_K2;
+				}
+				$('#hashes').val(k2);
 
 
-			// Bind enter key on "generate" to replicate mouse click
-			$("#generate").on("keyup", function (event) {
-        if (event.which == 13) {
-            $("#generate").trigger('click');
-        }
-    	});
+
+				// Close login dialog
+				$('#login-modal').modal('hide');
+				$('#domain').focus();
+			}
 
 
-			// Get the user's options and call the generate script
+
+
+
+
+			// LOGOUT
+			// Remove all user-associated variables
+			// Reset login screen
+			function logout(erase, erase_confirmed) {
+				// Erase User Token, if requested
+				if ( erase == true ) {
+					if ( erase_confirmed ) {
+						$('#confirm-erase').modal('hide');
+						var user_id = Sha256.hash(USERNAME);
+						document.cookie = user_id + '=;expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+					}
+
+					else {
+						$('#confirm-erase').modal({
+							keyboard: false,
+							backdrop: 'static'
+						});
+					}
+				}
+
+				// When not erase, or when erasing and has been confirmed
+				// Reset user-associated settings and show login form
+				if ( !erase || (erase && erase_confirmed) ) {
+					// Clear User Variables
+					ENCRYPTED_USER_TOKEN = "";
+					USERNAME = "";
+					PASSWORD = "";
+
+					// Clear user info
+					$('#user-info').html("");
+
+					// Clear domain
+					$('#domain').val("");
+
+					launchLogin();
+				}
+			}
+
+
+
+			// RESET DEFAULTS
+			// Erase all cookies related to options
+			// Reset the form
+			function resetDefaults(confirmed) {
+
+				if ( confirmed ) {
+					$('#confirm-reset').modal('hide');
+
+					// Save preferences as cookies
+					// Use default settings
+					createCookie('n', DEFAULT_LENGTH, 365);
+					createCookie('c', DEFAULT_CAPS, 365);
+					createCookie('s', DEFAULT_SYMBOLS, 365);
+					createCookie('a', DEFAULT_SYMCHARS, 365);
+					createCookie('y', DEFAULT_K2, 365);
+
+					// Reset the form
+					completeLogin(USERNAME, PASSWORD, ENCRYPTED_USER_TOKEN);
+				}
+
+				else {
+					// Show Confirm Dialog
+					$('#confirm-reset').modal({
+						keyboard: false,
+						backdrop: 'static'
+					});
+				}
+
+			}
+
+
+
+
+
+
+
+
+			// ********* GENERATE PASSWORD ********* //
+
+
+			// START PASSWORD GENERATION
 			function generate() {
 				// Check required arguments: domain, password
+				var username = USERNAME;
+				var password = PASSWORD;
+				var encrypted_token = ENCRYPTED_USER_TOKEN;
 				var domain = $('#domain').val();
-				var password = $('#password').val();
 				var symchars = $("#symbol-chars").val();
 
-				if ( domain == "" ) {
-					throwError("You must enter a domain.");
+				if ( username == "" ) {
+					throwError("Username is not set.  Please logout and log back in.");
 				}
 				else if ( password == "" ) {
-					throwError("You must enter a master password.");
+					throwError("Master Password is not set.  Please logout and log back in.");
+				}
+				else if ( encrypted_token == "" ) {
+					throwError("User Token is not set.  Please logout and log back in.");
+				}
+				else if ( domain == "" ) {
+					throwError("You must enter a domain.");
 				}
 				else if ( symchars.indexOf("&") > -1 ) {
 					throwError("'&' is not supported as a special character.");
@@ -319,7 +1020,7 @@
 				}
 				else {
 					var length = $('#length').find(":selected").text();
-					var passes = $("#hashes").val();
+					var k2 = $("#hashes").val();
 
 					var caps = "false";
 					if ( $('.bootstrap-switch-id-uppercase').hasClass("bootstrap-switch-on") ) {
@@ -331,16 +1032,30 @@
 						symbols = "true";
 					}
 
-					// Check for unsupported characters: #, &
 
+					// Save preferences as cookies
+					createCookie('n', length, 365);
+					createCookie('c', caps, 365);
+					createCookie('s', symbols, 365);
+					createCookie('a', symchars, 365);
+					createCookie('y', k2, 365);
 
-					var url = "pswd.generate.php?d=" + domain + "&p=" + password + "&n=" + length + "&c=" + caps + "&x=" + passes + "&s=" + symbols + "&t=" + symchars;
-					var jqxhr = $.get(url, function(data) {
+					// Create POST request to generate the password
+					var jqxhr = $.post("generate.php", {
+						u: username,
+						p: password,
+						e: encrypted_token,
+						d: domain,
+						n: length,
+						c: caps,
+						y: k2,
+						s: symbols,
+						a: symchars
+					}).done(function( data ) {
 						displayPassword(data);
-					})
-				  .fail(function() {
-				  	throwError("Could not generate password.  Plese try again.")
-				  });
+					}).fail(function() {
+						throwError("Could not generate password.  Plese try again.")
+					});
 				}
 			}
 
@@ -351,14 +1066,17 @@
 			function modalHidden(evt) {
 					$("#domain").focus();
 					$("#domain").select();
-
-					$(".password-verdict").remove();
-					$(".progress").remove();
 			}
 			function modalShown(evt) {
 					$("#generated-password").focus();
 					$("#generated-password").select();
 			}
+
+
+
+
+
+			// ********* DISPLAY PASSWORD ********* //
 
 			// Fill in the generated password and show the Modal
 			function displayPassword(password) {
@@ -366,19 +1084,49 @@
 				// Fill in the generated password
 				$('#generated-password').val(password);
 
-				// Set up strength meter
-				var options = {
-					onKeyUp: function (evt) {
-						$(evt.target).pwstrength("outputErrorList");
-					}
-				};
-				$('#generated-password').pwstrength(options);
 
-				// Set up Brute Force Time
-				$('#generated-password').pwdstr('#generated-password-time');
+				$('#generated-password').keyup(function (e) {
+        	$("#generated-password").complexify({}, function(valid, complexity) {
+						console.log("Password Complexity: " + complexity);
+						var percent = Math.round(complexity);
 
-				// Trigger a Key Up Event to start the meter and time
+						// Base color off of complexity
+						$('#strength').removeClass();
+						$('#strength').addClass('progress-bar');
+
+						// < 20 = red = danger
+						if ( percent < 20 ) {
+							$('#strength').addClass('progress-bar-danger');
+						}
+
+						// >= 20 && < 50 = orange = warning
+						else if ( percent >= 20 && percent < 50 ) {
+							$('#strength').addClass('progress-bar-warning');
+						}
+
+						// >= 50 && < 75 = info = light blue
+						else if ( percent >= 50 && percent < 75 ) {
+							$('#strength').addClass('progress-bar-info');
+						}
+
+						// >= 75 = success = green
+						else {
+							$('#strength').addClass('progress-bar-success');
+						}
+
+
+						// Set width of progress bar
+						$('#strength').css('width', percent+'%').attr('aria-valuenow', percent);
+
+						// Set complexity
+						$('#complexity').html(percent + "%");
+					});
+				});
+
 				$('#generated-password').keyup();
+
+
+
 
 
 				// Add Copy Instructions Based on OS
@@ -408,6 +1156,9 @@
 
 
 
+
+			// ********* COOKIE FUNCTIONS ********* //
+
 			function readCookie(name) {
 				var nameEQ = name + "=";
 				var ca = document.cookie.split(';');
@@ -416,7 +1167,7 @@
 					while (c.charAt(0)==' ') c = c.substring(1,c.length);
 					if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
 				}
-				return null;
+				return "";
 			}
 
 			function createCookie(name,value,days) {
@@ -428,6 +1179,11 @@
 				else var expires = "";
 				document.cookie = name+"="+value+expires+"; path=/";
 			}
+
+
+
+
+			// ********* ERROR DISPLAY ********* //
 
 			function throwError(msg) {
 				// Set error message
