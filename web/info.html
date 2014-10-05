@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+		<title>David Waring - PSWD</title>
+
+		<link href="/css/bootstrap.min.css" rel="stylesheet">
+		<link href="/css/bootstrap-switch.css" rel="stylesheet">
+		<!--[if lt IE 9]>
+			<script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+		<![endif]-->
+		<link href="/css/styles.css" rel="stylesheet">
+		<style>
+			.password-verdict {
+				font-weight: 700;
+				font-size: 14px;
+				padding-top: 15px;
+			}
+			ul.error-list {
+				font-size: 12px;
+				list-style-type: none;
+				padding: 0px;
+			}
+		</style>
+	</head>
+	<body>
+
+
+		<!-- NAV BAR -->
+		<div class="navbar-wrapper">
+			<div class="container">
+				<div class="navbar navbar-inverse navbar-static-top">
+					<div class="navbar-header">
+						<a class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+							<span class="icon-bar"></span>
+							<span class="icon-bar"></span>
+							<span class="icon-bar"></span>
+						</a>
+						<a class="navbar-brand" href="//www.davidwaring.net/index.html">David Waring</a>
+					</div>
+
+					<div class="navbar-collapse collapse">
+						<ul class="nav navbar-nav">
+							<li><a href="//www.davidwaring.net/index.html">Home</a></li>
+
+							<li class="dropdown">
+								<a href="//www.davidwaring.net/android/index.html" class="dropdown-toggle" data-toggle="dropdown">Android Apps <b class="caret"></b></a>
+								<ul class="dropdown-menu">
+									<li><a href="//www.davidwaring.net/rt/mnr/index.html">Right Track: Metro North</a></li>
+									<li><a href="//www.davidwaring.net/rt/lirr/index.html">Right Track: LIRR</a></li>
+									<li><a href="//www.davidwaring.net/android/nycts/index.html">NYC Transit Status</a></li>
+								</ul>
+							</li>
+
+							<li class="dropdown active">
+								<a href="//www.davidwaring.net/projects/index.html" class="dropdown-toggle" data-toggle="dropdown">Projects <b class="caret"></b></a>
+								<ul class="dropdown-menu">
+									<li><a href="//www.davidwaring.net/projects/rtm.html">RTM CLI</a></li>
+									<li><a href="//www.davidwaring.net/projects/backup.html">Mac OS X Backup Utility</a></li>
+									<li><a href="//pswd.davidwaring.net/">PSWD</a></li>
+								</ul>
+							</li>
+
+							<li class="dropdown">
+								<a href="//www.davidwaring.net/hiking/index.html" class="dropdown-toggle" data-toggle="dropdown">Hiking Maps <b class="caret"></b></a>
+								<ul class="dropdown-menu">
+									<li><a href="//www.davidwaring.net/hiking/ManorvilleHills.html">Manorville Hills</a></li>
+								</ul>
+							</li>
+
+							<li><a href="//www.davidwaring.net/contact.html">Contact</a></li>
+						</ul>
+					</div>
+				</div>
+			</div><!-- /container -->
+		</div><!-- /navbar wrapper -->
+
+
+
+		<div class="container content">
+
+			<div class="container" style="text-align: center; margin: 20px;">
+				<h1>PSWD</h1>
+				<h3>A pseudo-random password generator</h3>
+			</div>
+			<hr>
+			<p><strong>Version</strong>: 3.0.1</p>
+			<p><strong>Author</strong>: <a href="http://www.davidwaring.net/">David Waring</a></p>
+			<p><strong>Email</strong>: <a href="mailto:dave@davidwaring.net">dave@davidwaring.net</a></p>
+			<p><strong>Website</strong>: <a href="https://pswd.davidwaring.net/">Web Implementation</a></p>
+			<p><strong>Source Code</strong>: <a href="https://gitlab.davidwaring.net/dave/pswd/tree/master">Gitlab Project</a></p>
+			<hr>
+			<p>PSWD is a pseudo-random password generator, meaning that it will generate a seemingly
+			random string of letters, numbers and symbols as the final site-specific password.  However, when
+			given the same set of input criteria it will generate the same password.</p>
+			<p>Passwords generated using this method don't need to be written down or stored on your
+			computer or using any third-party service.  When needed, they can simply be regenerated.</p>
+			<p>The inputs required to generate a password include:</p>
+			<ul>
+			<li><strong>Username</strong> - a nickname or email that makes the passwords unique for yourself.</li>
+			<li><strong>Master Password</strong> - a <em>strong</em> password that is used in both steps of the password
+			generation process.  This is the only password you will need to remember.</li>
+			<li><strong>Domain</strong> - the website or service where the final password is going to be used.<br>This creates passwords that are specific for a single website or service.</li>
+			</ul>
+			<p>Optional settings include:</p>
+			<ul>
+			<li><strong>Password Length</strong></li>
+			<li><strong>Uppercase Letters</strong></li>
+			<li><strong>Symbols</strong></li>
+			<li><strong>The symbol characters to choose from</strong></li>
+			<li><strong>The number of times the final password is hashed</strong> - changing this is useful when
+			you want/need to change your password for a specific site while keeping all other
+			settings the same.</li>
+			</ul>
+			<p>PSWD uses a two-step hashing process to generate the passwords as set forth in the
+			paper <a href="https://jhalderm.com/pub/papers/password-www05.pdf">A Convenient Method for Securely Managing Passwords (J. Alex Halderman, et.
+			al.; 2005)</a>.  This implementation
+			uses the <strong><a href="http://en.wikipedia.org/wiki/SHA-2">SHA-256</a></strong> <a href="http://en.wikipedia.org/wiki/Cryptographic_hash_function">cryptographic hash function</a>
+			created by the U.S. National Security Agency.</p>
+			<p>The first step creates a "user token" by hashing the supplied username
+			and master password.  This step is designed to take a significant
+			amount of time (between 30 and 90 seconds) by repeatedly hashing
+			the token 10^7 times.  This is done to deter brute force attacks from
+			attempting to learn a master password from a stolen site password.  As
+			a compromise for convenience, this user token can be locally cached
+			so it does not have to be computed each time a password is generated.</p>
+			<p>The second step involves hashing the cached user token, the master
+			password and the domain.  The hash function is repeated many fewer
+			times so this step is almost instantaneous.  The end result is
+			a site-specific hash using the digits 0-9 and letters a-f.</p>
+			<p>The final step is processing any of the optional settings (password
+			length, uppercase letters and symbols).  When given the same input
+			settings, these options will be applied in the same manner every time.
+			This ensures that the same exact password will be generated each
+			time.</p>
+			<h2 id="implementations">Implementations</h2>
+			<p>The following implementations are currently available:</p>
+			<ul>
+			<li><p><strong>Python</strong> - This provides a command line interface that should
+			work across different systems.</p>
+			</li>
+			<li><p><strong>Java</strong> - These are java functions that are used in the Android
+			application.</p>
+			</li>
+			<li><p><strong>Web</strong> - This is a web front-end that caches the user token
+			as an encrypted cookie and passes all arguments to the Python
+			script which is run on the server.  This uses Twitter Bootstrap v3
+			and php scripts for encryption and the system call to pswd.</p>
+			</li>
+			</ul>
+			<h2 id="usage">Usage</h2>
+			<p>The following is the usage of the Python command line script.</p>
+			<pre class="editor-colors lang-text"><div class="line"><span class="text plain"><span class="meta paragraph text"><span>PSWD:&nbsp;A&nbsp;pseudo-random&nbsp;password&nbsp;generator</span></span></span></div><div class="line"><span class="text plain"><span class="meta paragraph text"><span>Version:&nbsp;3.0.1</span></span></span></div><div class="line"><span class="text plain"><span class="meta paragraph text"><span>Author:&nbsp;David&nbsp;Waring</span></span></span></div><div class="line"><span class="text plain"><span class="meta paragraph text"><span>Information:&nbsp;</span><span class="markup underline link https hyperlink"><span>https://pswd.davidwaring.net/</span></span></span></span></div><div class="line"><span class="text plain"><span>&nbsp;</span></span></div><div class="line"><span class="text plain"><span class="meta paragraph text"><span>USAGE:</span></span></span></div><div class="line"><span class="text plain"><span>&nbsp;&nbsp;</span><span class="meta paragraph text"><span>/usr/local/bin/pswd&nbsp;--user&nbsp;[user&nbsp;name]&nbsp;--password&nbsp;[master&nbsp;password]&nbsp;--domain&nbsp;[domain]</span></span></span></div><div class="line"><span class="text plain"><span class="meta paragraph text"><span>REQUIRED&nbsp;ARGUMENTS:</span></span></span></div><div class="line"><span class="text plain"><span>&nbsp;&nbsp;</span><span class="meta paragraph text"><span>-u,&nbsp;--user&nbsp;[user&nbsp;name]:&nbsp;a&nbsp;user&nbsp;name&nbsp;to&nbsp;identify&nbsp;yourself</span></span></span></div><div class="line"><span class="text plain"><span class="meta paragraph text"><span>&nbsp;&nbsp;-p,&nbsp;--password&nbsp;[master&nbsp;password]:&nbsp;your&nbsp;master&nbsp;password</span></span></span></div><div class="line"><span class="text plain"><span class="meta paragraph text"><span>&nbsp;&nbsp;-d,&nbsp;--domain&nbsp;[domain]:&nbsp;the&nbsp;domain&nbsp;the&nbsp;password&nbsp;will&nbsp;be&nbsp;used&nbsp;for</span></span></span></div><div class="line"><span class="text plain"><span class="meta paragraph text"><span>OPTIONAL&nbsp;ARGUMENTS:</span></span></span></div><div class="line"><span class="text plain"><span>&nbsp;&nbsp;</span><span class="meta paragraph text"><span>-n&nbsp;[int]:&nbsp;the&nbsp;length&nbsp;of&nbsp;the&nbsp;final&nbsp;password&nbsp;(Default:&nbsp;24)</span></span></span></div><div class="line"><span class="text plain"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="meta paragraph text"><span>minimum:&nbsp;4&nbsp;&nbsp;&nbsp;&nbsp;maximum:&nbsp;64</span></span></span></div><div class="line"><span class="text plain"><span>&nbsp;&nbsp;</span><span class="meta paragraph text"><span>-c:&nbsp;toggle&nbsp;the&nbsp;use&nbsp;of&nbsp;uppercase&nbsp;letters&nbsp;(Default:&nbsp;True)</span></span></span></div><div class="line"><span class="text plain"><span class="meta paragraph text"><span>&nbsp;&nbsp;-s:&nbsp;toggle&nbsp;the&nbsp;use&nbsp;of&nbsp;symbols&nbsp;(Default:&nbsp;True)</span></span></span></div><div class="line"><span class="text plain"><span class="meta paragraph text"><span>&nbsp;&nbsp;-a&nbsp;[symbols]:&nbsp;define&nbsp;possible&nbsp;symbols&nbsp;to&nbsp;include&nbsp;(Default:&nbsp;!@$*-_.?)</span></span></span></div><div class="line"><span class="text plain"><span class="meta paragraph text"><span>&nbsp;&nbsp;-x&nbsp;[int]:&nbsp;the&nbsp;number&nbsp;of&nbsp;times&nbsp;the&nbsp;user&nbsp;token&nbsp;is&nbsp;hashed&nbsp;(Default:&nbsp;10000000)</span></span></span></div><div class="line"><span class="text plain"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="meta paragraph text"><span>the&nbsp;user&nbsp;token&nbsp;is&nbsp;generated&nbsp;once&nbsp;when&nbsp;the&nbsp;script&nbsp;is&nbsp;first&nbsp;run&nbsp;and&nbsp;cached</span></span></span></div><div class="line"><span class="text plain"><span class="meta paragraph text"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for&nbsp;subsequent&nbsp;uses.&nbsp;&nbsp;This&nbsp;is&nbsp;designed&nbsp;to&nbsp;take&nbsp;some&nbsp;time&nbsp;to&nbsp;generate.</span></span></span></div><div class="line"><span class="text plain"><span>&nbsp;&nbsp;</span><span class="meta paragraph text"><span>-y&nbsp;[int]:&nbsp;the&nbsp;number&nbsp;of&nbsp;times&nbsp;the&nbsp;generated&nbsp;password&nbsp;is&nbsp;hashed&nbsp;(Default:&nbsp;250)</span></span></span></div><div class="line"><span class="text plain"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="meta paragraph text"><span>this&nbsp;number&nbsp;can&nbsp;be&nbsp;changed&nbsp;to&nbsp;generate&nbsp;a&nbsp;new&nbsp;password&nbsp;for&nbsp;the&nbsp;same</span></span></span></div><div class="line"><span class="text plain"><span class="meta paragraph text"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;domain&nbsp;while&nbsp;keeping&nbsp;all&nbsp;other&nbsp;settings&nbsp;the&nbsp;same.</span></span></span></div><div class="line"><span class="text plain"><span>&nbsp;&nbsp;</span><span class="meta paragraph text"><span>-q:&nbsp;don't&nbsp;print&nbsp;the&nbsp;password&nbsp;to&nbsp;the&nbsp;console&nbsp;(just&nbsp;copy&nbsp;to&nbsp;clipboard)</span></span></span></div><div class="line"><span class="text plain"><span class="meta paragraph text"><span>&nbsp;&nbsp;--cache:&nbsp;location&nbsp;of&nbsp;the&nbsp;user&nbsp;token&nbsp;cache&nbsp;file</span></span></span></div><div class="line"><span class="text plain"><span class="meta paragraph text"><span>&nbsp;&nbsp;-h,&nbsp;--help:&nbsp;display&nbsp;this&nbsp;usage&nbsp;information.</span></span></span></div><div class="line"><span class="text plain"><span>&nbsp;</span></span></div><div class="line"><span class="text plain"><span class="meta paragraph text"><span>If&nbsp;you&nbsp;want&nbsp;to&nbsp;manage&nbsp;the&nbsp;user&nbsp;token&nbsp;yourself&nbsp;(instead&nbsp;of&nbsp;using&nbsp;the&nbsp;cache&nbsp;file):</span></span></span></div><div class="line"><span class="text plain"><span>&nbsp;&nbsp;</span><span class="meta paragraph text"><span>To&nbsp;retrieve&nbsp;or&nbsp;generate&nbsp;a&nbsp;user&nbsp;token:</span></span></span></div><div class="line"><span class="text plain"><span>&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="meta paragraph text"><span>/usr/local/bin/pswd&nbsp;--gettoken&nbsp;--user&nbsp;[user&nbsp;name]&nbsp;--password&nbsp;[master&nbsp;password]</span></span></span></div><div class="line"><span class="text plain"><span>&nbsp;&nbsp;</span><span class="meta paragraph text"><span>When&nbsp;generating&nbsp;a&nbsp;password,&nbsp;add&nbsp;the&nbsp;token&nbsp;in&nbsp;addition&nbsp;to&nbsp;other&nbsp;arguments:</span></span></span></div><div class="line"><span class="text plain"><span>&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="meta paragraph text"><span>-t,&nbsp;--token&nbsp;[user&nbsp;token]:&nbsp;provide&nbsp;your&nbsp;own&nbsp;user&nbsp;token</span></span></span></div></pre>
+
+
+		</div>
+
+
+
+
+		<!-- script references -->
+		<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.2/jquery.min.js"></script>
+		<script src="/js/bootstrap.min.js"></script>
+		<script src="/js/scripts.js"></script>
+	</body>
+</html>

@@ -1,7 +1,7 @@
 # PSWD
 ### A pseudo-random password generator
 ---
-**Version**: 3.0
+**Version**: 3.0.1
 
 **Author**: [David Waring](http://www.davidwaring.net/)
 
@@ -60,7 +60,7 @@ settings, these options will be applied in the same manner every time.
 This ensures that the same exact password will be generated each
 time.
 
-##Implementations##
+## Implementations
 
 The following implementations are currently available:
 
@@ -76,11 +76,11 @@ script which is run on the server.  This uses Twitter Bootstrap v3
 and php scripts for encryption and the system call to pswd.
 
 
-##Usage##
+## Usage
 The following is the usage of the Python command line script.
 ```
 PSWD: A pseudo-random password generator
-Version: 3.0
+Version: 3.0.1
 Author: David Waring
 Information: https://pswd.davidwaring.net/
 
@@ -91,7 +91,7 @@ REQUIRED ARGUMENTS:
   -p, --password [master password]: your master password
   -d, --domain [domain]: the domain the password will be used for
 OPTIONAL ARGUMENTS:
-  -n [int]: the length of the final password (Default: 14)
+  -n [int]: the length of the final password (Default: 24)
       minimum: 4    maximum: 64
   -c: toggle the use of uppercase letters (Default: True)
   -s: toggle the use of symbols (Default: True)

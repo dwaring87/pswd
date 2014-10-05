@@ -97,7 +97,9 @@
 					<span class="glyphicon glyphicon-cog"></span>&nbsp;&nbsp;<span class="caret"></span>
 				</button>
 				<ul class="dropdown-menu" role="menu">
-					<li><a href="#" onclick="window.open('pswd.py');"><span class="glyphicon glyphicon-download-alt"></span>&nbsp;&nbsp;Download Python script</a></li>
+					<li><a href="#" onclick="window.open('https://gitlab.davidwaring.net/dave/pswd/blob/master/python/pswd');"><span class="glyphicon glyphicon-download-alt"></span>&nbsp;&nbsp;Download Python Script</a></li>
+					<li><a href="#" onclick="window.open('https://gitlab.davidwaring.net/dave/pswd/tree/master');"><span class="glyphicon glyphicon-file"></span>&nbsp;&nbsp;View Source Code</a></li>
+					<li class="divider"></li>
 					<li><a href="#" onclick="resetDefaults(false);"><span class="glyphicon glyphicon-refresh"></span>&nbsp;&nbsp;Reset Default Settings</a></li>
 					<li class="divider"></li>
 					<li><a href="#" onclick="logout(true, false);"><span class="glyphicon glyphicon-trash"></span>&nbsp;&nbsp;Logout and Erase User Token</a></li>
@@ -289,8 +291,8 @@
 									Enter your:
 									<ul class="text-left">
 										<li><b>User Name</b> a nickname or email address to identify yourself</li>
-										<li><b>Master Password</b> a very strong password that you use to generate all
-											site-specific passwords.</li>
+										<li><b>Master Password</b> a <u>very strong</u> password that you use to generate all
+											site-specific passwords. (You'll need to remember this one).</li>
 									</ul>
 									<i>No registration is necessary, just use the same User Name and Master Password
 										each time you generate a password.</i>
@@ -359,15 +361,18 @@
 							<br />
 
 							<h4 class="">
-								Generating User Token
+								Generate User Token
 							</h4>
 
 							<p class="text-left"><small>
-								This is the first step of generating your password.  This is designed to take a significant
-								amount of time (up to a few minutes) in order to deter a brute force attack from attempting to
-								learn your master password.  This will only need to be done once since the user token will be
-								cached (locally on your machine as a cookie - no information is stored on this server).
-							</small></p>
+								This is the first step of generating your site password.  This is designed to take a significant
+								amount of time (usually between 30-90 seconds) in order to protect your master password from
+								a brute force attack on a stolen site password.  This will only need to be done once since
+								the user token will be cached (locally on your machine as an encrypted cookie - no information is
+								stored on this server).</small></p>
+							<p class="text-left"><small><strong>
+								You can remove the cached copy of your encrypted user token afterwards when you log out.
+							</strong></small></p>
 
 							<hr />
 
@@ -522,7 +527,7 @@
 
 			// ********* DEFAULT SETTINGS ********* //
 
-			var DEFAULT_LENGTH = 14;
+			var DEFAULT_LENGTH = 24;
 			var DEFAULT_CAPS = "true";
 			var DEFAULT_SYMBOLS = "true";
 			var DEFAULT_SYMCHARS = "!@$*-_.?";

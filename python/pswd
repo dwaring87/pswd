@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 
-VERSION = "3.0"
+VERSION = "3.0.1"
 
 
 import os
@@ -20,7 +20,7 @@ USER=""
 PASSWORD=""
 USER_TOKEN=""
 DOMAIN=""
-LENGTH=14
+LENGTH=24
 K1=10000000
 K2=250
 UPPERCASE=True
