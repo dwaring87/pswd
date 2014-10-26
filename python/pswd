@@ -197,10 +197,11 @@ def generatePassword():
 
 
   # generate nums string from the key
-  temp = hashlib.sha1(key + "numbers1").hexdigest() + \
-    hashlib.sha1(key + "numbers2").hexdigest() + \
-    hashlib.sha1(key + "numbers3").hexdigest() + \
-    hashlib.sha1(key + "numbers4").hexdigest()
+  temp = hashlib.sha256(key + "numbers1").hexdigest() + \
+    hashlib.sha256(key + "numbers2").hexdigest() + \
+    hashlib.sha256(key + "numbers3").hexdigest() + \
+    hashlib.sha256(key + "numbers4").hexdigest()
+
 
   # pull out all digits from the hashed string
   nums = ""
