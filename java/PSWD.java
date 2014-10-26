@@ -1,220 +1,225 @@
+// Version 3.0.2
+// Author: David Waring <dave@davidwaring.net>
+// Information: http://pswd.davidwaring.net/info.html
+
+// NOTE: These functions have been pulled from the PSWD Class of the PSWD Android App
+// See the full Git repo for more details
+
 package com.waring.pswd;
 
 import java.io.UnsupportedEncodingException;
-import java.security.*;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.Date;
+
+import org.spongycastle.util.encoders.Hex;
+
 
 public class PSWD {
 
-	// DEFAULT FUNCTION VARS
-	static final String def_domain = null;
-	static final String def_password = null;
-	static final int def_length = 14;
-	static final boolean def_caps = true;
-	static final boolean def_symbols = false;
-	static final String def_symbolChars = "!@#$%^&*()_-+=<,>.?/";
-	static final int def_passes = 250;
-
-	// FUNCTION VARS
-	String domain;
-	String password;
-	int length;
-	boolean caps;
-	boolean symbols;
-	String symbolChars;
-	int passes;
 
 
 
+	// GENERATE PASSWORD
 
-	/** convert a byte[] representation of a hash into
-	 *  a hex string
-	 * @param data the byte representation of a hash
-	 * @return a string hex representation of a hash
-	 */
-	private static String convToHex(byte[] data) {
-	  StringBuilder buf = new StringBuilder();
-	  for (int i = 0; i < data.length; i++) {
-      int halfbyte = (data[i] >>> 4) & 0x0F;
-      int two_halfs = 0;
-      do {
-        if ((0 <= halfbyte) && (halfbyte <= 9))
-          buf.append((char) ('0' + halfbyte));
-        else
-          buf.append((char) ('a' + (halfbyte - 10)));
-        halfbyte = data[i] & 0x0F;
-      } while(two_halfs++ < 1);
-	  }
-	  return buf.toString();
-  }
+	public static String generate(String username, String master_password, String token, String domain, int length, boolean caps, boolean symbols, String symchars, int hashes) {
+		String key = domain + master_password + token;
+		String password = key;
+
+		// Hash the password 'hashes' number of times
+		password = hash(password, hashes);
+
+		// Trim to final length
+		password = password.substring(0, length);
 
 
+		// generate nums string from key
+		String nums = hash(key + "numbers1") + hash(key + "numbers2") + hash(key + "numbers3") + hash(key + "numbers4");
+		nums = nums.replaceAll("[^\\d]", "");
 
-	/** Generate Password Hash.
-	 * @throws UnsupportedEncodingException
-	 * @throws NoSuchAlgorithmException */
-	private String generate(String domain, String password, int length, boolean caps, boolean symbols,
-			String symbol_chars, int passes) throws UnsupportedEncodingException, NoSuchAlgorithmException {
-
-
-		if (domain.equals(null) || domain.equals("")) {
-			Toast toast = Toast.makeText(getApplicationContext(), "Please enter a domain", Toast.LENGTH_LONG);
-			toast.show();
-			return "Error";
-		}
-		if (password.equals(null) || password.equals("")) {
-			Toast toast = Toast.makeText(getApplicationContext(), "Please enter a master password", Toast.LENGTH_LONG);
-			toast.show();
-			return "Error";
-		}
+		// an index of the number being used from nums
+		int num_index = 0;
 
 
+		// ADD SYMBOLS, if requested
+		if ( symbols ) {
 
-		// generate hash key, hashed 'passes' number of times
-		String key = domain + password;
-		try {
-			MessageDigest sha1 = MessageDigest.getInstance("SHA1");
-			for ( int i = 0; i < passes; i++ ) {
-				byte[] sha1hash = new byte[40];
-				sha1.update(key.getBytes("iso-8859-1"), 0, key.length());
-				sha1hash = sha1.digest();
-				key = convToHex(sha1hash);
-			}
-		}
-		catch (NoSuchAlgorithmException e) {}
-
-
-
-		// trim the key to the specified length
-		String trimmed = key.substring(0, length);
-
-
-
-		// generate a string of numbers, based on the hash key
-		String temp = "";
-		try {
-			MessageDigest sha1 = MessageDigest.getInstance("SHA1");
-			byte[] sha1hash = new byte[40];
-			key = key + "numbers";
-			sha1.update(key.getBytes("iso-8859-1"), 0, key.length());
-			sha1hash = sha1.digest();
-			temp = convToHex(sha1hash);
-		}
-		catch (NoSuchAlgorithmException e) {}
-
-		// strip letters from the string
-		String nums = "";
-		for ( int i = 0; i < temp.length(); i++ ) {
-			if ( Character.isDigit(temp.charAt(i)) ) {
-				nums = nums + temp.charAt(i);
-			}
-		}
-
-		// lengthen the number of numbers
-		nums = nums + nums + nums + nums + nums;
-		int num_count = 0;
-
-
-
-		// add symbols, if requested
-		String symboled = "";
-
-		if ( symbols == true ) {
-
-			// generate a list to work with
-			char[] chararray = trimmed.toCharArray();
+			// create a list of characters to work with
+			char[] s = password.toCharArray();
 
 			// get the number of symbols to add to the password
-			int div = Integer.parseInt(Character.toString(nums.charAt(num_count)));
-			num_count ++;
-
-			if ( div < 4 ) {
-				div = 4;
+			// use the length of the password / the first digit
+			int div = Integer.parseInt(Character.toString(nums.charAt(num_index)));
+			num_index = num_index + 1;	// increase num index
+			if ( div <= 3 ) {						// <= 3 creates too many symbols
+				div = 4;									// divide by at least 4
 			}
+			int num_of_symbols = length / div;
 
-			int num_of_symbols = (int) Math.floor(length / div);
-
-
-			// loop to add symbols
+			// loop to add each symbol
 			for ( int i = 0; i < num_of_symbols; i++ ) {
 
-				// get the location of the symbol (two digits)
-				String loc =  Character.toString(nums.charAt(num_count)) + Character.toString(nums.charAt(num_count+1));
-				int location = Integer.parseInt(loc) % length;
-				num_count = num_count + 2;
+				// get the location to add the symbols (two digits)
+				int location = Integer.parseInt(Character.toString(nums.charAt(num_index))+Character.toString(nums.charAt(num_index+1)));
+				location = location % length;
+				num_index = num_index + 2;
 
-				// get the symbol to add (two digits)
-				String symbol_loc = Character.toString(nums.charAt(num_count)) + Character.toString(nums.charAt(num_count+1));
-				int symbol_location = Integer.parseInt(symbol_loc) % symbol_chars.length();
-				char symbol = symbol_chars.charAt(symbol_location);
-				num_count = num_count + 2;
+				// get the symbol character location
+				int symbol_location = Integer.parseInt(Character.toString(nums.charAt(num_index))+Character.toString(nums.charAt(num_index+1)));
+				symbol_location = symbol_location % symchars.length();
+				num_index = num_index + 2;
 
-				// add the symbol at the location
-				chararray[location] = symbol;
+				// get the symbol character
+				Character symbol = symchars.charAt(symbol_location);
 
+				// Add the symbol to the password
+				s[location] = symbol;
 			}
 
-			// generate final 'symbolized' password string
-			symboled = new String(chararray);
-
-		}
-		else {
-			symboled = trimmed;
+			password = new String(s);
 		}
 
 
 
-		// add caps, if requested
-		String capsed = "";
+		// ADD CAPS, if requested
+		if ( caps ) {
 
-		if ( caps == true ) {
+			// create a list of characters to work with
+			char[] c = password.toCharArray();
 
-			// generate a list to work with
-			char[] chararray = symboled.toCharArray();
-
-			// get the number of characters to capitalize
-			int div = Integer.parseInt(Character.toString(nums.charAt(num_count)));
-			num_count ++;
-
-			if ( div < 3 ) {
+			// get the number of characters to capitalize in the password
+			// use the length of the password / the next digit
+			int div = Integer.parseInt(Character.toString(nums.charAt(num_index)));
+			num_index = num_index + 1;
+			if ( div <= 2 ) {
 				div = 3;
 			}
+			int num_of_caps = length / div;
 
-			int num_of_caps = (int) Math.floor(length / div);
-
-			// loop to add caps
+			// loop to add each cap
 			for ( int i = 0; i < num_of_caps; i++ ) {
 
 				// get the location to add the cap (two digits)
-				String loc =  Character.toString(nums.charAt(num_count)) + Character.toString(nums.charAt(num_count+1));
-				int location = Integer.parseInt(loc) % length;
-				num_count = num_count + 2;
+				int location = Integer.parseInt(Character.toString(nums.charAt(num_index))+Character.toString(nums.charAt(num_index+1)));
+				location = location % length;
+				num_index = num_index + 2;
 
 				// make sure to capitalize at least the first location
 				if ( i == 0 ) {
-					while ( Character.isLetter(chararray[location]) == false ) {
-						location = ( location + 1 ) % length;
+					while ( c[location] == Character.toUpperCase(c[location]) ) {
+						location = (location+1) % length;
 					}
 				}
 
-				// try to capitalize the char at the location
-				chararray[location] = Character.toUpperCase(chararray[location]);
-
+				// Capitalize the character at the location
+				c[location] = Character.toUpperCase(c[location]);
 			}
 
-			// join the list to a string
-			capsed = new String(chararray);
-
-		}
-		else {
-			capsed = symboled;
+			password = new String(c);
 		}
 
 
-		// Final Password
-		String FINAL_PASSWORD = capsed;
+		return password;
+	}
 
-		return FINAL_PASSWORD;
 
+
+
+
+
+	// SHA-256 HASH //
+
+	/**
+	 * Hash the specified message using SHA-256
+	 * Repeat the hash passes number of times
+	 * @param msg the message to hash
+	 * @param passes the number of times the hash is repeated
+	 * @return the hashed String
+	 */
+	private static String hash(String msg) {
+		return hash(msg, 1, null);
+	}
+
+	private static String hash(String msg, int passes) {
+		return hash(msg, passes, null);
+	}
+
+	private static String hash(String msg, int passes, HashListener listener) {
+		try {
+			try {
+				MessageDigest sha = MessageDigest.getInstance("SHA-256");
+				byte[] bytes;
+
+
+				int percent = 0;
+				int prev_percent = 0;
+
+				ArrayList<Long> deltas = new ArrayList<Long>();
+				long time = new Date().getTime();
+
+				for ( int i = 0; i < passes; i++ ) {
+					percent = (int) Math.floor(((double) i / passes)*100);
+					if ( null != listener && percent > prev_percent ) {
+
+						// ESTIMATE TIME REMAINING
+
+						// Get amount of time for the previous percent chunk
+						long currentTime = new Date().getTime();
+						long timeDelta = currentTime - time;
+						time = currentTime;
+						deltas.add(timeDelta);
+
+						// Get the average time of the percent chunks
+						long sum = 0;
+						for (Long delta : deltas) {
+					        sum += delta;
+					    }
+					    long avgDelta =  sum / deltas.size();
+
+					    // Get the estimated remaining time
+						int percentRemaining = 100 - percent;
+						int timeRemaining = (int) avgDelta*percentRemaining;
+						int sec = (timeRemaining/1000) % 60;
+						int min = (timeRemaining/(1000*60)) % 60;
+
+						// Format time remaining
+						String format = "";
+						if (sec != 0) {
+							format = sec + " seconds";
+						}
+						if (min != 0) {
+							format = min + " minutes " + format;
+						}
+						format = format + " remaining";
+
+						listener.updateProgress(percent, format);
+						prev_percent = percent;
+					}
+
+
+					sha.update(msg.getBytes("iso-8859-1"), 0, msg.length());
+					bytes = sha.digest();
+					msg = new String(Hex.encode(bytes));
+				}
+
+			}
+			catch (NoSuchAlgorithmException e) {}
+		}
+		catch (UnsupportedEncodingException e) {}
+
+		return msg;
+	}
+
+
+
+
+	// Hashing Progress Listener
+	// This is used for the token generation process to provide feedback
+	// on the percent progress and remaining time
+
+	public interface HashListener {
+		public void updateProgress(int progress, String remaining);
 	}
 
 }
