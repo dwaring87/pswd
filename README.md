@@ -67,6 +67,10 @@ The following implementations are currently available:
 * **Python** - This provides a command line interface that should
 work across different systems.
 
+* **Android** - This is an Eclipse project that includes a fully-functional
+Android app implementing the PSWD v3 algorithm in Java.  The app will
+cache User Tokens as encrypted strings in the app's SharedPreferences.
+
 * **Java** - These are java functions that are used in the Android
 application.
 
