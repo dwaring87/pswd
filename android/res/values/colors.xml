@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<color name="slate">#607d8b</color>
+	<color name="slate_dark">#37474f</color>
+	<color name="slate_black">#263238</color>
+	<color name="slate_white">#eceff1</color>
+	<color name="slate_light">#cfd8dc</color>
+</resources>

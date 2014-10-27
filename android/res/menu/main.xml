@@ -1,0 +1,29 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.waring.pswd.MainActivity" >
+	
+    <item
+        android:id="@+id/action_info"
+        android:orderInCategory="100"
+        android:showAsAction="never"
+        android:title="More Information"/>
+	
+    <item
+        android:id="@+id/action_web"
+        android:orderInCategory="100"
+        android:showAsAction="never"
+        android:title="Web Version" />
+    
+    <item
+        android:id="@+id/action_logout_erase"
+        android:orderInCategory="100"
+        android:showAsAction="never"
+        android:title="Logout and Erase User Token"/>
+    
+    <item
+        android:id="@+id/action_logout"
+        android:orderInCategory="100"
+        android:showAsAction="never"
+        android:title="Logout"/>
+
+</menu>

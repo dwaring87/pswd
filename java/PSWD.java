@@ -23,6 +23,19 @@ public class PSWD {
 
 	// GENERATE PASSWORD
 
+	/**
+	 * Generate the site-specific password
+	 * @param username User Name
+	 * @param master_password Master Password
+	 * @param token User Token
+	 * @param domain site Domain
+	 * @param length length of final password
+	 * @param caps include uppercase letters
+	 * @param symbols include symbol characters
+	 * @param symchars the symbol characters to choose from
+	 * @param hashes the number of times the password is hashed
+	 * @return the final formatted site-specific password
+	 */
 	public static String generate(String username, String master_password, String token, String domain, int length, boolean caps, boolean symbols, String symchars, int hashes) {
 		String key = domain + master_password + token;
 		String password = key;
@@ -33,10 +46,12 @@ public class PSWD {
 		// Trim to final length
 		password = password.substring(0, length);
 
-
 		// generate nums string from key
+		// these digits are used to determine the location of symbols and uppercase letters
+		// hash the key (and a different salt) 4 times to ensure more than enough digits are generated
 		String nums = hash(key + "numbers1") + hash(key + "numbers2") + hash(key + "numbers3") + hash(key + "numbers4");
 		nums = nums.replaceAll("[^\\d]", "");
+
 
 		// an index of the number being used from nums
 		int num_index = 0;
@@ -132,9 +147,10 @@ public class PSWD {
 
 	/**
 	 * Hash the specified message using SHA-256
-	 * Repeat the hash passes number of times
 	 * @param msg the message to hash
 	 * @param passes the number of times the hash is repeated
+	 * @param listener the HashListener interface to monitor
+	 *  the progress of long-running hashes
 	 * @return the hashed String
 	 */
 	private static String hash(String msg) {
@@ -151,15 +167,23 @@ public class PSWD {
 				MessageDigest sha = MessageDigest.getInstance("SHA-256");
 				byte[] bytes;
 
-
+				// Monitor the progress of the loop
 				int percent = 0;
 				int prev_percent = 0;
 
+				// Keep track of the amount of time each 1-percent interval
+				// takes to complete - use the average to estimate the remaining time
 				ArrayList<Long> deltas = new ArrayList<Long>();
-				long time = new Date().getTime();
+				long time = new Date().getTime();	// the initial time
 
+				// Loop 'passes' number of times
 				for ( int i = 0; i < passes; i++ ) {
+
+					// the current progress
 					percent = (int) Math.floor(((double) i / passes)*100);
+
+					// Update the progress using the listener, if supplied
+					// Only update the progress in 1-percent intervals
 					if ( null != listener && percent > prev_percent ) {
 
 						// ESTIMATE TIME REMAINING
@@ -173,11 +197,11 @@ public class PSWD {
 						// Get the average time of the percent chunks
 						long sum = 0;
 						for (Long delta : deltas) {
-					        sum += delta;
-					    }
-					    long avgDelta =  sum / deltas.size();
+							sum += delta;
+						}
+						long avgDelta =  sum / deltas.size();
 
-					    // Get the estimated remaining time
+						// Get the estimated remaining time
 						int percentRemaining = 100 - percent;
 						int timeRemaining = (int) avgDelta*percentRemaining;
 						int sec = (timeRemaining/1000) % 60;
@@ -193,13 +217,17 @@ public class PSWD {
 						}
 						format = format + " remaining";
 
+						// Update the listener
 						listener.updateProgress(percent, format);
+
 						prev_percent = percent;
 					}
 
-
+					// Perform the Hash
 					sha.update(msg.getBytes("iso-8859-1"), 0, msg.length());
 					bytes = sha.digest();
+
+					// Convert the digest to a Hex-encoded String
 					msg = new String(Hex.encode(bytes));
 				}
 
@@ -213,13 +241,13 @@ public class PSWD {
 
 
 
-
 	// Hashing Progress Listener
-	// This is used for the token generation process to provide feedback
-	// on the percent progress and remaining time
 
+  /**
+    * Interface for monitoring long-running hashes
+    * @param progress the percent complete
+    * @param remaining a formatted String of the estimated time remaining
+    */
 	public interface HashListener {
 		public void updateProgress(int progress, String remaining);
 	}
-
-}

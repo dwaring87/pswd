@@ -1,0 +1,242 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android" 
+    android:id="@+id/login_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/slate_white">
+    
+    
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+		android:orientation="horizontal"
+		android:gravity="center_horizontal"
+		android:padding="5dp"
+		android:background="#37474f">
+        
+        <ImageView
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:src="@drawable/ic_user"/>
+        
+        <TextView
+            android:id="@+id/login_title"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_gravity="center_vertical"
+	        android:layout_marginRight="32dp"
+	        android:paddingLeft="10dp"
+	        android:textSize="24sp"
+	        android:text="Login"
+	        android:textStyle="bold"
+	        android:textColor="@color/slate_white" />
+        
+    </LinearLayout>
+    
+    
+    <LinearLayout
+        android:id="@+id/login_root_container"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:orientation="horizontal">
+    
+    	
+        
+        <!-- LOGIN FORM -->
+	    <ScrollView
+	        android:id="@+id/login_form_container"
+		    android:layout_width="match_parent"
+		    android:layout_height="match_parent"
+		    android:animateLayoutChanges="true"
+		    android:visibility="gone">
+	    
+	    
+		    <LinearLayout
+		        android:id="@+id/login_form"
+		        android:layout_width="fill_parent"
+		        android:layout_height="wrap_content"
+		        android:orientation="vertical"
+		        android:padding="15dp">
+		    
+			    <EditText
+				    android:id="@+id/login_username"
+				    android:layout_width="fill_parent"
+				    android:layout_height="wrap_content"
+				    android:hint="User Name"
+				    android:inputType="textVisiblePassword|textNoSuggestions" />
+			    
+			    <EditText
+				    android:id="@+id/login_password"
+				    android:layout_width="fill_parent"
+				    android:layout_height="wrap_content"
+				    android:hint="Master Password"
+				    android:inputType="textPassword" />
+			    
+			    
+			    <CheckBox
+					android:id="@+id/login_remember_username"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_marginTop="10dp"
+					android:text="Remember User Name"
+					android:textColor="@color/slate_dark"
+					android:checked="false" />
+		 		
+			    <CheckBox
+					android:id="@+id/login_remember_password"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_marginBottom="10dp"
+					android:text="Remember Master Password"
+					android:textColor="@color/slate_dark"
+					android:checked="false" />
+			    
+			    
+			    <Button
+			        android:id="@+id/login_button"
+			        android:layout_width="fill_parent"
+			        android:layout_height="wrap_content"
+			        android:background="@drawable/btn_yellow"
+			        android:textColor="@color/slate_dark"
+			        android:textStyle="bold"
+			        android:textSize="16sp"
+			        android:text="LOGIN" />
+			    
+			    
+		  		<TextView
+					android:id="@+id/login_registration"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_gravity="center_vertical"
+					android:textSize="12sp"
+					android:textColor="@color/slate_dark"
+					android:layout_marginTop="25dp" />
+			    
+		    
+		    </LinearLayout>
+	    
+		    
+		</ScrollView>
+		<!-- END LOGIN FORM -->
+		
+		
+		
+		<!-- GENERATE FORM -->
+	    <ScrollView
+	        android:id="@+id/login_generate_container"
+		    android:layout_width="match_parent"
+		    android:layout_height="match_parent"
+		    android:animateLayoutChanges="true"
+		    android:visibility="visible">
+	    
+	    
+		    <LinearLayout
+		        android:id="@+id/login_generate"
+		        android:layout_width="fill_parent"
+		        android:layout_height="wrap_content"
+		        android:orientation="vertical"
+		        android:padding="15dp">
+		  		
+		        <TextView
+		            android:layout_width="fill_parent"
+		            android:layout_height="wrap_content"
+		            android:gravity="center_horizontal"
+		            android:textColor="@color/slate_dark"
+		            android:textStyle="bold"
+		            android:textSize="18sp"
+		            android:text="Generate User Token" />
+		        
+		        <TextView
+		            android:layout_width="fill_parent"
+		            android:layout_height="wrap_content"
+		            android:layout_marginTop="10dp"
+		            android:gravity="left"
+		            android:textColor="@color/slate"
+		            android:textStyle="normal"
+		            android:textSize="14sp"
+		            android:text="This is the first step of generating your site password. This is designed to take a significant amount of time (up to a few minutes) in order to protect your master password from a brute force attack on a stolen site password. This will only need to be done once since the user token will be cached (locally and encrypted on your device)." />
+		        
+		        <TextView
+		            android:layout_width="fill_parent"
+		            android:layout_height="wrap_content"
+		            android:layout_marginTop="10dp"
+		            android:gravity="left"
+		            android:textColor="@color/slate"
+		            android:textStyle="bold"
+		            android:textSize="14sp"
+		            android:text="You can remove the cached copy of your encrypted user token afterwards when you log out." />
+		        
+		        
+		        <View
+		            android:layout_width="fill_parent"
+		            android:layout_height="1dp"
+		            android:layout_marginTop="15dp"
+		            android:layout_marginBottom="15dp"
+		            android:background="@color/slate_light" />
+		        
+
+		            
+	            <TextView
+		            android:layout_width="fill_parent"
+		            android:layout_height="wrap_content"
+		            android:gravity="center_horizontal"
+		            android:textColor="@color/slate_dark"
+		            android:textStyle="bold"
+		            android:textSize="18sp"
+		            android:text="Verify Master Password" />
+	            
+	            <EditText 
+	                android:id="@+id/login_password_verify"
+	                android:layout_width="fill_parent"
+			    	android:layout_height="wrap_content"
+			    	android:layout_marginTop="10dp"
+			    	android:hint="Re-enter Master Password"
+			    	android:inputType="textPassword" />
+	            
+	            <LinearLayout
+	                android:id="@+id/login_verify_container"
+	                android:layout_width="fill_parent"
+	                android:layout_height="wrap_content"
+	                android:layout_marginTop="15dp"
+	                android:orientation="horizontal"
+	                android:visibility="visible">
+	                
+	                <Button 
+	                    android:id="@+id/login_button_back"
+	                    android:layout_width="wrap_content"
+	                    android:layout_height="fill_parent"
+	                    android:background="@drawable/btn_yellow"
+	                    android:textSize="12sp"
+	                    android:textStyle="bold"
+	                    android:textColor="@color/slate_dark"
+	                    android:text="BACK" />
+	               	
+	                <Button
+	                    android:id="@+id/login_button_generate"
+	                    android:layout_width="0dp"
+	                    android:layout_height="fill_parent"
+	                    android:layout_weight="1"
+	                    android:background="@drawable/btn_green"
+	                    android:textSize="16sp"
+	                    android:textStyle="bold"
+	                    android:textColor="@color/slate_white"
+	                    android:text="GENERATE USER TOKEN" />
+	                
+	                
+	            </LinearLayout>
+		        
+		        
+			</LinearLayout>
+			
+		</ScrollView>    
+		<!-- END GENERATE FORM -->
+	    
+	
+    
+    
+    </LinearLayout>
+	
+    
+</LinearLayout>
+	
