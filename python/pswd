@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 
-VERSION = "3.0.2"
+VERSION = "3.1.0"
 
 
 import os
@@ -9,6 +9,7 @@ from os.path import expanduser
 import sys
 import getopt
 import hashlib
+import base64
 import platform
 from subprocess import call, Popen, PIPE
 
@@ -31,13 +32,13 @@ QUIET=False
 
 # Set possible min and max length of password
 MIN_LENGTH = 4
-MAX_LENGTH = 64 # This is set by the return of the hash algorithm
+MAX_LENGTH = 64
 
 
 USAGE = """PSWD: A pseudo-random password generator
 Version: """ + VERSION + """
 Author: David Waring
-Information: https://pswd.davidwaring.net/
+Information: https://pswd.davidwaring.net/info.html
 
 USAGE:
   """ + os.path.realpath(__file__) + """ --user [user name] --password [master password] --domain [domain]
@@ -183,16 +184,24 @@ def generatePassword():
 
   # Hash the pswd K2 times using SHA256
   pswd = key
-  for i in range(1, K2+1):
+  for i in range(1, K2):
     pswd = hashlib.sha256(pswd).hexdigest()
+  
+  # for the last hash: concatenate 2 hashes of pswd to lengthen the result
+  pswd = hashlib.sha256(pswd + "1").hexdigest() + hashlib.sha256(pswd + "2").hexdigest()
 
 
+  # convert to Base64
+  pswd = base64.b64encode(pswd.decode("hex"))
+
+  # remove base64 characters: + / =
+  pswd = pswd.replace("+", "")
+  pswd = pswd.replace("/", "")
+  pswd = pswd.replace("=", "")
 
 
   # Trim the password to LENGTH
   pswd = pswd[:LENGTH]
-
-
 
 
 
@@ -252,37 +261,11 @@ def generatePassword():
 
 
 
-  # add caps, if requested
-  if UPPERCASE == 1:
-
-    # generate a list to work with
-    c = list(pswd)
-
-    # get the number of characters to capitalize in the pswd
-    # use the length of the password / the next digit
-    div = int(nums[num_index])
-    num_index = num_index + 1
-    if (div <= 2):
-      div = 3
-    num_of_caps = LENGTH / div
-
-    # loop to add caps
-    for i in range(0, num_of_caps):
-
-      # get the location to add the cap (two digits)
-      location = int(nums[num_index] + nums[num_index+1]) % LENGTH
-      num_index = num_index + 2
-
-      # make sure to capitalize at least the first location
-      if ( i == 0 ):
-        while( c[location] == c[location].upper() ):
-          location = (location + 1) % LENGTH
-
-      # try to capitalize the character at the location
-      c[location] = c[location].upper()
-
-    # return to a string
-    pswd = "".join(c)
+  # if caps are NOT requested, convert the pswd to lowercase
+  # if caps are requested, we don't need to do anything.  The Base64
+  # encoding adds a mix of letter case
+  if UPPERCASE == False:
+      pswd = pswd.lower()
 
 
 

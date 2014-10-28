@@ -1,4 +1,4 @@
-// Version 3.0.2
+// Version 3.1.0
 // Author: David Waring <dave@davidwaring.net>
 // Information: http://pswd.davidwaring.net/info.html
 
@@ -36,12 +36,33 @@ public class PSWD {
 	 * @param hashes the number of times the password is hashed
 	 * @return the final formatted site-specific password
 	 */
-	public static String generate(String username, String master_password, String token, String domain, int length, boolean caps, boolean symbols, String symchars, int hashes) {
+public static String generate(String username, String master_password, String token, String domain, int length, boolean caps, boolean symbols, String symchars, int hashes) {
 		String key = domain + master_password + token;
 		String password = key;
 
 		// Hash the password 'hashes' number of times
-		password = hash(password, hashes);
+		password = hash(password, hashes-1);
+
+		// for the last hash: concatenate 2 hashes of password to lengthen the result
+		password = hash(password + "1") + hash(password + "2");
+
+
+		// Decode the Hex String to a byte array
+		int len = password.length();
+	  byte[] hex = new byte[len / 2];
+		for (int i = 0; i < len; i += 2) {
+			hex[i / 2] = (byte) ((Character.digit(password.charAt(i), 16) << 4) + Character.digit(password.charAt(i+1), 16));
+		}
+
+		// Encode Password in Base64
+		password = new String(Base64.encode(hex, Base64.DEFAULT));
+
+		// Remove Base64 characters: + / =
+		password = password.replace("+", "");
+		password = password.replace("/", "");
+		password = password.replace("=", "");
+
+
 
 		// Trim to final length
 		password = password.substring(0, length);
@@ -67,8 +88,8 @@ public class PSWD {
 			// use the length of the password / the first digit
 			int div = Integer.parseInt(Character.toString(nums.charAt(num_index)));
 			num_index = num_index + 1;	// increase num index
-			if ( div <= 3 ) {						// <= 3 creates too many symbols
-				div = 4;									// divide by at least 4
+			if ( div <= 3 ) {			// <= 3 creates too many symbols
+				div = 4;				// divide by at least 4
 			}
 			int num_of_symbols = length / div;
 
@@ -97,41 +118,10 @@ public class PSWD {
 
 
 
-		// ADD CAPS, if requested
-		if ( caps ) {
-
-			// create a list of characters to work with
-			char[] c = password.toCharArray();
-
-			// get the number of characters to capitalize in the password
-			// use the length of the password / the next digit
-			int div = Integer.parseInt(Character.toString(nums.charAt(num_index)));
-			num_index = num_index + 1;
-			if ( div <= 2 ) {
-				div = 3;
-			}
-			int num_of_caps = length / div;
-
-			// loop to add each cap
-			for ( int i = 0; i < num_of_caps; i++ ) {
-
-				// get the location to add the cap (two digits)
-				int location = Integer.parseInt(Character.toString(nums.charAt(num_index))+Character.toString(nums.charAt(num_index+1)));
-				location = location % length;
-				num_index = num_index + 2;
-
-				// make sure to capitalize at least the first location
-				if ( i == 0 ) {
-					while ( c[location] == Character.toUpperCase(c[location]) ) {
-						location = (location+1) % length;
-					}
-				}
-
-				// Capitalize the character at the location
-				c[location] = Character.toUpperCase(c[location]);
-			}
-
-			password = new String(c);
+		// if caps are NOT requested, convert password to lowercase
+		// if caps are requested, nothing needs to be done since Base64 includes a mix of case
+		if ( !caps ) {
+			password = password.toLowerCase();
 		}
 
 
