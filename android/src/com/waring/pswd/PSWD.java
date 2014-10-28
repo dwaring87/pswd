@@ -22,12 +22,12 @@ import android.util.Base64;
 
 
 public class PSWD {
-	
-	
+
+
 	// A Base64 Encoded String for the AES Encryption Key (256 bits)
 	private static final String ENCRYPT_KEY = "YOUR_PRIVATE_KEY";
-	
-	
+
+
 	/**
 	 * Check to see if the specified User Name has a cached User Token in SharedPreferences
 	 * @param context the Context of the Activity making the call
@@ -36,7 +36,7 @@ public class PSWD {
 	 */
 	public static boolean hasUserToken(Context context, String username) {
 		String token = getUserToken(context, username);
-		
+
 		if ( token.equals("") ) {
 			return false;
 		}
@@ -44,8 +44,8 @@ public class PSWD {
 			return true;
 		}
 	}
-	
-	
+
+
 	/**
 	 * Get the User Token of the specified User from SharedPreferences
 	 * @param context the Context of the Activity making the call
@@ -55,22 +55,22 @@ public class PSWD {
 	public static String getUserToken(Context context, String username) {
 		// Get the User ID
 		String userid = hash(username);
-		
+
 		// Get a saved token, if present
 		// Return an empty String if no saved User Token is present
 		SharedPreferences sharedPref = context.getSharedPreferences(MainActivity.PREFS_NAME, Context.MODE_PRIVATE);
 		String token = sharedPref.getString(userid, "");
-		
+
 		// Return the plain-text value of the User Token
 		return PSWD.decrypt(token);
 	}
-	
-	
+
+
 	/**
 	 * Save the specified User Token for the given User
 	 * The tokens are stored in the SharedPreferences of the app (PSWD_PREFS.xml)
 	 * The key is the User ID (SHA256 hash of the User Name)
-	 * The value is the AES encrypted & base 64 encoded value of the User Token 
+	 * The value is the AES encrypted & base 64 encoded value of the User Token
 	 * @param context the Context of the Activity making the call
 	 * @param username the User Name of the User
 	 * @param token the User Token of the User
@@ -78,15 +78,15 @@ public class PSWD {
 	public static void saveUserToken(Context context, String username, String token) {
 		SharedPreferences sharedPref = context.getSharedPreferences(MainActivity.PREFS_NAME, Context.MODE_PRIVATE);
 		Editor edit = sharedPref.edit();
-		
+
 		// Key = User ID
 		// Value = Encrypted User Token
 		edit.putString(PSWD.getUserId(username), PSWD.encrypt(token));
-		
+
 		edit.commit();
 	}
-	
-	
+
+
 	/**
 	 * Remove the stored User Token from the SharedPreferences
 	 * @param context the Context of the Activity making the call
@@ -98,8 +98,8 @@ public class PSWD {
 		edit.remove(PSWD.getUserId(username));
     	edit.commit();
 	}
-	
-	
+
+
 	/**
 	 * Generate the User Token for the specified User Name / Master Password pair
 	 * The User Token is a SHA256 hash of the User Name and Master Password that is looped 10^7 times
@@ -114,8 +114,8 @@ public class PSWD {
 		String token = username + password;
 		return hash(token, MainActivity.DEFAULT_K1, listener);
 	}
-	
-	
+
+
 	/**
 	 * Get the User ID for the specified User Name
 	 * This is a single SHA-256 hash of the User Name
@@ -125,13 +125,13 @@ public class PSWD {
 	public static String getUserId(String username) {
 		return hash(username);
 	}
-	
-	
-	
-	
-	
+
+
+
+
+
 	// GENERATE PASSWORD
-	
+
 	/**
 	 * Generate the site-specific password
 	 * @param username User Name
@@ -148,30 +148,51 @@ public class PSWD {
 	public static String generate(String username, String master_password, String token, String domain, int length, boolean caps, boolean symbols, String symchars, int hashes) {
 		String key = domain + master_password + token;
 		String password = key;
-		
+
 		// Hash the password 'hashes' number of times
-		password = hash(password, hashes);
-		
+		password = hash(password, hashes-1);
+
+		// for the last hash: concatenate 2 hashes of password to lengthen the result
+		password = hash(password + "1") + hash(password + "2");
+
+
+		// Decode the Hex String to a byte array
+		int len = password.length();
+	    byte[] hex = new byte[len / 2];
+	    for (int i = 0; i < len; i += 2) {
+	    	hex[i / 2] = (byte) ((Character.digit(password.charAt(i), 16) << 4) + Character.digit(password.charAt(i+1), 16));
+	    }
+
+	    // Encode Password in Base64
+	    password = new String(Base64.encode(hex, Base64.DEFAULT));
+
+	    // Remove Base64 characters: + / =
+	    password = password.replace("+", "");
+	    password = password.replace("/", "");
+	    password = password.replace("=", "");
+
+
+
 		// Trim to final length
 		password = password.substring(0, length);
-		
+
 		// generate nums string from key
 		// these digits are used to determine the location of symbols and uppercase letters
 		// hash the key (and a different salt) 4 times to ensure more than enough digits are generated
 		String nums = hash(key + "numbers1") + hash(key + "numbers2") + hash(key + "numbers3") + hash(key + "numbers4");
 		nums = nums.replaceAll("[^\\d]", "");
-		
-		
+
+
 		// an index of the number being used from nums
 		int num_index = 0;
-				
-		
+
+
 		// ADD SYMBOLS, if requested
 		if ( symbols ) {
-			
+
 			// create a list of characters to work with
 			char[] s = password.toCharArray();
-			
+
 			// get the number of symbols to add to the password
 			// use the length of the password / the first digit
 			int div = Integer.parseInt(Character.toString(nums.charAt(num_index)));
@@ -180,142 +201,111 @@ public class PSWD {
 				div = 4;				// divide by at least 4
 			}
 			int num_of_symbols = length / div;
-			
+
 			// loop to add each symbol
 			for ( int i = 0; i < num_of_symbols; i++ ) {
-				
+
 				// get the location to add the symbols (two digits)
 				int location = Integer.parseInt(Character.toString(nums.charAt(num_index))+Character.toString(nums.charAt(num_index+1)));
 				location = location % length;
 				num_index = num_index + 2;
-				
+
 				// get the symbol character location
 				int symbol_location = Integer.parseInt(Character.toString(nums.charAt(num_index))+Character.toString(nums.charAt(num_index+1)));
 				symbol_location = symbol_location % symchars.length();
 				num_index = num_index + 2;
-				
+
 				// get the symbol character
 				Character symbol = symchars.charAt(symbol_location);
-				
+
 				// Add the symbol to the password
 				s[location] = symbol;
 			}
-			
+
 			password = new String(s);
 		}
-		
-		
-		
-		// ADD CAPS, if requested
-		if ( caps ) {
-			
-			// create a list of characters to work with
-			char[] c = password.toCharArray();
-			
-			// get the number of characters to capitalize in the password
-			// use the length of the password / the next digit
-			int div = Integer.parseInt(Character.toString(nums.charAt(num_index)));
-			num_index = num_index + 1;
-			if ( div <= 2 ) {
-				div = 3;
-			}
-			int num_of_caps = length / div;
-			
-			// loop to add each cap
-			for ( int i = 0; i < num_of_caps; i++ ) {
-				
-				// get the location to add the cap (two digits)
-				int location = Integer.parseInt(Character.toString(nums.charAt(num_index))+Character.toString(nums.charAt(num_index+1)));
-				location = location % length;
-				num_index = num_index + 2;
-				
-				// make sure to capitalize at least the first location
-				if ( i == 0 ) {
-					while ( c[location] == Character.toUpperCase(c[location]) ) {
-						location = (location+1) % length;
-					}
-				}
-				
-				// Capitalize the character at the location
-				c[location] = Character.toUpperCase(c[location]);
-			}
-			
-			password = new String(c);
+
+
+
+		// if caps are NOT requested, convert password to lowercase
+		// if caps are requested, nothing needs to be done since Base64 includes a mix of case
+		if ( !caps ) {
+			password = password.toLowerCase();
 		}
-				
-		
+
+
 		return password;
 	}
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
 	// SHA-256 HASH //
-	
+
 	/**
 	 * Hash the specified message using SHA-256
 	 * @param msg the message to hash
 	 * @param passes the number of times the hash is repeated
-	 * @param listener the HashListener interface to monitor 
+	 * @param listener the HashListener interface to monitor
 	 *  the progress of long-running hashes
 	 * @return the hashed String
 	 */
 	private static String hash(String msg) {
 		return hash(msg, 1, null);
 	}
-	
+
 	private static String hash(String msg, int passes) {
 		return hash(msg, passes, null);
 	}
-	
+
 	private static String hash(String msg, int passes, HashListener listener) {
 		try {
 			try {
 				MessageDigest sha = MessageDigest.getInstance("SHA-256");
-				byte[] bytes;				
-				
+				byte[] bytes;
+
 				// Monitor the progress of the loop
 				int percent = 0;
 				int prev_percent = 0;
-				
+
 				// Keep track of the amount of time each 1-percent interval
 				// takes to complete - use the average to estimate the remaining time
 				ArrayList<Long> deltas = new ArrayList<Long>();
 				long time = new Date().getTime();	// the initial time
-				
+
 				// Loop 'passes' number of times
 				for ( int i = 0; i < passes; i++ ) {
-					
+
 					// the current progress
 					percent = (int) Math.floor(((double) i / passes)*100);
-					
+
 					// Update the progress using the listener, if supplied
 					// Only update the progress in 1-percent intervals
 					if ( null != listener && percent > prev_percent ) {
-						
+
 						// ESTIMATE TIME REMAINING
-						
+
 						// Get amount of time for the previous percent chunk
 						long currentTime = new Date().getTime();
 						long timeDelta = currentTime - time;
 						time = currentTime;
 						deltas.add(timeDelta);
-						
+
 						// Get the average time of the percent chunks
 						long sum = 0;
 						for (Long delta : deltas) {
 					        sum += delta;
 					    }
 					    long avgDelta =  sum / deltas.size();
-						
+
 					    // Get the estimated remaining time
 						int percentRemaining = 100 - percent;
 						int timeRemaining = (int) avgDelta*percentRemaining;
 						int sec = (timeRemaining/1000) % 60;
 						int min = (timeRemaining/(1000*60)) % 60;
-						
+
 						// Format time remaining
 						String format = "";
 						if (sec != 0) {
@@ -325,36 +315,36 @@ public class PSWD {
 							format = min + " minutes " + format;
 						}
 						format = format + " remaining";
-						
+
 						// Update the listener
 						listener.updateProgress(percent, format);
-						
+
 						prev_percent = percent;
 					}
-					
+
 					// Perform the Hash
 					sha.update(msg.getBytes("iso-8859-1"), 0, msg.length());
 					bytes = sha.digest();
-					
+
 					// Convert the digest to a Hex-encoded String
 					msg = new String(Hex.encode(bytes));
 				}
-				
+
 			}
 			catch (NoSuchAlgorithmException e) {}
 		}
 		catch (UnsupportedEncodingException e) {}
-		
+
 		return msg;
 	}
-	
-	
-	
 
-	
-	
+
+
+
+
+
 	// AES ENCRYPTION / DECRYPTION //
-	
+
 	/**
 	 * Encrypt the plain-text message using AES
 	 * The output is Base64 encoded
@@ -369,7 +359,7 @@ public class PSWD {
         try {
         	final byte[] symKeyData = Arrays.copyOfRange(Base64.decode(PSWD.ENCRYPT_KEY, Base64.DEFAULT), 0, 32);	// Ensure 256 bits / 32 bytes
             final byte[] encodedMessage = plainMessage.getBytes(Charset.forName("UTF-8"));
-        	
+
             final Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
             final int blockSize = cipher.getBlockSize();
 
@@ -381,20 +371,20 @@ public class PSWD {
             final SecureRandom rnd = SecureRandom.getInstance("SHA1PRNG");
             rnd.nextBytes(ivData);
             final IvParameterSpec iv = new IvParameterSpec(ivData);
-            
+
             cipher.init(Cipher.ENCRYPT_MODE, symKey, iv);
-            
+
             final byte[] encryptedMessage = cipher.doFinal(encodedMessage);
 
             // concatenate IV and encrypted message
             final byte[] ivAndEncryptedMessage = new byte[ivData.length + encryptedMessage.length];
             System.arraycopy(ivData, 0, ivAndEncryptedMessage, 0, blockSize);
             System.arraycopy(encryptedMessage, 0, ivAndEncryptedMessage, blockSize, encryptedMessage.length);
-            
+
             final String ivAndEncryptedMessageBase64 = Base64.encodeToString(ivAndEncryptedMessage, Base64.DEFAULT);
-            
+
             return ivAndEncryptedMessageBase64;
-        } 
+        }
         catch (Exception e) {
         	e.printStackTrace();
         	return plainMessage;
@@ -410,11 +400,11 @@ public class PSWD {
 		if ( ivAndEncryptedMessageBase64.equals("") ) {
 			return ivAndEncryptedMessageBase64;
 		}
-    	
+
         try {
         	final byte[] symKeyData = Arrays.copyOfRange(Base64.decode(PSWD.ENCRYPT_KEY, Base64.DEFAULT), 0, 32);	// Ensure 256 bits / 32 bytes
             final byte[] ivAndEncryptedMessage = Base64.decode(ivAndEncryptedMessageBase64, Base64.DEFAULT);
-        	
+
             final Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
             final int blockSize = cipher.getBlockSize();
 
@@ -429,26 +419,26 @@ public class PSWD {
             // retrieve the encrypted message itself
             final byte[] encryptedMessage = new byte[ivAndEncryptedMessage.length - blockSize];
             System.arraycopy(ivAndEncryptedMessage, blockSize, encryptedMessage, 0, encryptedMessage.length);
-            
+
             cipher.init(Cipher.DECRYPT_MODE, symKey, iv);
             final byte[] encodedMessage = cipher.doFinal(encryptedMessage);
             final String message = new String(encodedMessage, Charset.forName("UTF-8"));
 
             return message;
-        } 
+        }
         catch (Exception e) {
         	e.printStackTrace();
         	return ivAndEncryptedMessageBase64;
         }
     }
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
 	// Hashing Progress Listener
-	
+
     /**
      * Interface for monitoring long-running hashes
      * @param progress the percent complete

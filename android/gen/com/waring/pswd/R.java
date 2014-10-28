@@ -76,7 +76,7 @@ public final class R {
         public static final int action_info=0x7f0a001d;
         public static final int action_logout=0x7f0a0020;
         public static final int action_logout_erase=0x7f0a001f;
-        public static final int action_reset=0x7f0a001e;
+        public static final int action_web=0x7f0a001e;
         public static final int advanced_caps=0x7f0a0000;
         public static final int advanced_k2=0x7f0a0003;
         public static final int advanced_symbols=0x7f0a0001;
