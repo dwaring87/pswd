@@ -101,6 +101,9 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 	// Login Request Code
 	private static final int LOGIN_REQUEST = 1;
 	
+	// Display Password Request Code
+	private static final int DISPLAY_REQUEST = 2;
+	
 	
 	// More Information URL
 	private final String INFO_URL = "http://pswd.davidwaring.net/info.html";
@@ -175,7 +178,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 	    //    the amount of time since last paused exceeds the time limit or
 	    //    we're missing any user info
 	    if ( !GENERATING_TOKEN && (delta_pause > PREFS_MAX_PAUSE_TIME || MainActivity.USERNAME.equals("") || MainActivity.MASTER_PASSWORD.equals("") || MainActivity.USER_TOKEN.equals("")) ) {
-	    	login();
+	    	logout(false);
 	    }
 	    else {
 	    	ActionBar ab = getActionBar();
@@ -366,6 +369,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 	
 	/**
 	 * Receive the Result of the Login Activity
+	 * and the Display Password Activity
 	 */
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -392,7 +396,19 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 	            	catch (Exception e) {}
 	        	}
 	        }
-	        
+	    }
+	    
+	    // Process the result of the DisplayActivity
+	    else if ( requestCode == DISPLAY_REQUEST ) {
+	    	if ( resultCode == RESULT_OK ) {	
+	    		// Get the requested action
+	    		String action = data.getStringExtra("action");
+	    		
+	    		// If a logout is requested...
+	    		if ( action.equals("logout") ) {
+	    			logout(false);
+	    		}
+	    	}
 	    }
 	}
 	
@@ -406,7 +422,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 	 * See completeLogout() for Part 2
 	 * @param erase true to erase the User Token
 	 */
-	public void logout(boolean erase) {
+	private void logout(boolean erase) {
 		
 		// Remove cached User Token, if requested
     	if ( erase ) {
@@ -429,8 +445,6 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 				}
 			})
 			.show();
-    		
-    		
     	}
 		
     	
@@ -542,17 +556,11 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 		
 		
 		// Display the Password
-		AlertDialog.Builder builder = new AlertDialog.Builder(context);
-		builder.setTitle("Generated Password")
-			.setMessage(Html.fromHtml("Your password for <b>" + domain + "</b> is:<br /><br />" + final_password + "<br /><br /><font size='10'><i>Password is copied to clipboard.  Long-press a text field to paste.</i></font>"))
-			.setCancelable(true)
-			.setPositiveButton("Dismiss", new DialogInterface.OnClickListener() {
-				public void onClick(DialogInterface dialog, int id) {
-					dialog.dismiss();
-				}
-			});
-		AlertDialog alert = builder.create();
-		alert.show();
+	    // Launch the DisplayActivity
+	    Intent intent = new Intent(context, DisplayActivity.class);
+	    intent.putExtra("domain", domain);
+	    intent.putExtra("password", final_password);
+	    ((Activity) context).startActivityForResult(intent, DISPLAY_REQUEST);
 	}
 	
 	

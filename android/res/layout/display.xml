@@ -1,0 +1,125 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android" 
+    android:id="@+id/login_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/slate_white">
+    
+    
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+		android:orientation="horizontal"
+		android:gravity="center_horizontal"
+		android:padding="5dp"
+		android:background="#37474f">
+        
+        <ImageView
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:src="@drawable/ic_key"/>
+        
+        <TextView
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_gravity="center_vertical"
+	        android:layout_marginRight="32dp"
+	        android:paddingLeft="10dp"
+	        android:textSize="24sp"
+	        android:text="Password"
+	        android:textStyle="bold"
+	        android:textColor="@color/slate_white" />
+        
+    </LinearLayout>
+    
+    
+    
+
+    <ScrollView
+        android:id="@+id/login_form_container"
+	    android:layout_width="match_parent"
+	    android:layout_height="match_parent"
+	    android:animateLayoutChanges="true">
+    
+    
+	   <LinearLayout
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:orientation="vertical"
+	        android:padding="15dp">
+	    
+		    <TextView
+				android:id="@+id/display_line1"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_marginTop="5dp"
+				android:layout_marginBottom="15dp"
+				android:textSize="16sp"
+				android:textColor="@color/slate_dark"
+				android:text="Your password for facebook.com is:" />
+		    
+		    <EditText
+			    android:id="@+id/display_password"
+			    android:layout_width="fill_parent"
+			    android:layout_height="wrap_content"
+			    android:hint="Your site-specific password" />
+		    
+			
+		    <TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_marginTop="15dp"
+				android:layout_marginBottom="25dp"
+				android:textSize="12sp"
+				android:textStyle="italic"
+				android:textColor="@color/slate"
+				android:text="Your password is copied to the clipboard.  Long-press a text field to paste." />
+		    
+		    
+		    <LinearLayout
+       			android:layout_width="fill_parent"
+       			android:layout_height="fill_parent"
+       			android:orientation="horizontal">
+		    
+			    <Button
+			        android:id="@+id/display_dismiss"
+			        android:layout_width="0dp"
+			        android:layout_height="wrap_content"
+			        android:layout_weight="1"
+			        android:background="@drawable/btn_yellow"
+			        android:textColor="@color/slate_dark"
+			        android:textStyle="bold"
+			        android:textSize="16sp"
+			        android:text="DISMISS" />
+			    
+			    <View
+			        android:layout_width="1dp"
+			        android:layout_height="fill_parent"
+			        android:background="@color/slate_dark" />
+			    
+			    <Button
+			        android:id="@+id/display_logout"
+			        android:layout_width="0dp"
+			        android:layout_height="wrap_content"
+			        android:layout_weight="1"
+			        android:background="@drawable/btn_yellow"
+			        android:textColor="@color/slate_dark"
+			        android:textStyle="bold"
+			        android:textSize="16sp"
+			        android:text="LOGOUT" />
+			    
+		    </LinearLayout>
+
+		    
+	    
+	    </LinearLayout>
+    
+	    
+	</ScrollView>
+		
+	
+	
+    
+</LinearLayout>
+	
