@@ -182,11 +182,11 @@ def getToken():
 def generatePassword():
   key = DOMAIN + PASSWORD + USER_TOKEN
 
-  # Hash the pswd K2 times using SHA256
+  # Hash the pswd K2-1 times using SHA256
   pswd = key
   for i in range(1, K2):
     pswd = hashlib.sha256(pswd).hexdigest()
-  
+
   # for the last hash: concatenate 2 hashes of pswd to lengthen the result
   pswd = hashlib.sha256(pswd + "1").hexdigest() + hashlib.sha256(pswd + "2").hexdigest()
 

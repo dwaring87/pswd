@@ -1,29 +1,31 @@
 # PSWD
 ### A pseudo-random password generator
 ---
-**Version**: 3.0.1
+**Version**: 3.1.0
 
 **Author**: [David Waring](http://www.davidwaring.net/)
 
 **Email**: [dave@davidwaring.net](mailto:dave@davidwaring.net)
+
+**Source Code**: [Gitlab](https://gitlab.davidwaring.net/dave/pswd/tree/master)
 
 **Website**: [Web Implementation](https://pswd.davidwaring.net/)
 
 ---
 
 PSWD is a pseudo-random password generator, meaning that it will generate a seemingly
-random string of letters, numbers and symbols as the final site-specific password.  
-However, when given the same set of input criteria it will generate the same password.  
-Passwords generated using this method don't need to be written down or stored on your
+random string of letters, numbers and symbols as the final site-specific password.  However,
+when given the same set of input criteria it will generate the same password.  Passwords
+generated using this method don't need to be written down or stored on your
 computer or using any third-party service.  When needed, they can simply be regenerated.
 
 The inputs required to generate a password include:
 
-* **Username** - a nickname or email that makes the passwords unique for yourself.
+* **Username** - a nickname or email that you use to identify yourself.
 * **Master Password** - a *strong* password that is used in both steps of the password
 generation process.  This is the only password you will need to remember.
-* **Domain** - the website or service where the final password is going to be used.  
-This creates passwords that are specific for a single website or service.
+* **Domain** - the website or service where the final password is going to be
+used.  This creates passwords that are specific for a single website or service.
 
 Optional settings include:
 
@@ -38,7 +40,8 @@ settings the same.
 PSWD uses a two-step hashing process to generate the passwords as set forth in the
 paper [A Convenient Method for Securely Managing Passwords (J. Alex Halderman, et.
 al.; 2005)](https://jhalderm.com/pub/papers/password-www05.pdf).  This implementation
-uses the **[SHA-256](http://en.wikipedia.org/wiki/SHA-2)** [cryptographic hash function](http://en.wikipedia.org/wiki/Cryptographic_hash_function)
+uses the **[SHA-256](http://en.wikipedia.org/wiki/SHA-2)** [cryptographic hash
+function](http://en.wikipedia.org/wiki/Cryptographic_hash_function)
 created by the U.S. National Security Agency.
 
 The first step creates a "user token" by hashing the supplied username
@@ -60,6 +63,11 @@ settings, these options will be applied in the same manner every time.
 This ensures that the same exact password will be generated each
 time.
 
+<img src="https://pswd.davidwaring.net/images/general.png" width="450px">
+
+
+
+
 ## Implementations
 
 The following implementations are currently available:
@@ -77,19 +85,20 @@ application.
 * **Web** - This is a web front-end that caches the user token
 as an encrypted cookie and passes all arguments to the Python
 script which is run on the server.  This uses Twitter Bootstrap v3
-and php scripts for encryption and the system call to pswd.
+and php scripts for encryption and the system call to pswd.  This
+is  a copy of [https://pswd.davidwaring.net/](https://pswd.davidwaring.net/)
 
 
 ## Usage
 The following is the usage of the Python command line script.
 ```
 PSWD: A pseudo-random password generator
-Version: 3.0.1
+Version: 3.1.0
 Author: David Waring
-Information: https://pswd.davidwaring.net/
+Information: https://pswd.davidwaring.net/info.html
 
 USAGE:
-  /usr/local/bin/pswd --user [user name] --password [master password] --domain [domain]
+  pswd --user [user name] --password [master password] --domain [domain]
 REQUIRED ARGUMENTS:
   -u, --user [user name]: a user name to identify yourself
   -p, --password [master password]: your master password
@@ -112,6 +121,19 @@ OPTIONAL ARGUMENTS:
 
 If you want to manage the user token yourself (instead of using the cache file):
   To retrieve or generate a user token:
-    /usr/local/bin/pswd --gettoken --user [user name] --password [master password]
+    pswd --gettoken --user [user name] --password [master password]
   When generating a password, add the token in addition to other arguments:
-    -t, --token [user token]: provide your own user token```
+    -t, --token [user token]: provide your own user token
+```
+
+
+## Algorithm Details
+The following image details the steps of the PSWD algorithm with the right half
+showing the generation of an example password for each step.  The image is
+also available as a PDF from here: https://pswd.davidwaring.net/images/algo.pdf
+
+The dark green fields indicate user-entered variables and options.  The light
+green fields indicate calculated variables.  The '+' sign shows when
+two or more variables were concatenated together to form a single variable.
+
+<img src="https://pswd.davidwaring.net/images/algo.png" />
