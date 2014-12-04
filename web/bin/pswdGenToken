@@ -1,0 +1,138 @@
+#! /usr/bin/env python
+
+VERSION = "3.0"
+
+import os
+import sys
+import getopt
+import hashlib
+from math import floor
+
+
+# GLOBAL DEFAULT VARIABLES:
+USER=""
+PASSWORD=""
+K1=10000000
+FILE=""
+
+
+
+
+
+# Create a USER_TOKEN by hashing the USER and PASSWORD
+# This is looped K1 times and the number of loops
+# should make this step take a relatively long amount
+# of time to impede brute force attempts.
+def generateUserToken():
+  # create initial hash by concatenating USER and PASSWORD
+  token = USER + PASSWORD
+
+  # Hash token K1 times using SHA256
+  prevPer = -1
+  for i in range(1, K1+1):
+    per = (float(i) / float(K1)) * 100
+    per_floor = floor(float(per))
+
+    token = hashlib.sha256(token).hexdigest()
+
+    # log percent to file
+    if per_floor == prevPer + 1:
+      f=open(FILE,'w')
+      f.write(str(per_floor))
+      f.close();
+
+      prevPer = per_floor
+
+  # Return Final Step 1 Hash
+  return token
+
+
+
+
+def main(argv):
+
+  # Global Variables
+  global USER
+  global PASSWORD
+  global K1
+  global FILE
+
+
+
+
+  # ========= PROCESS COMMAND LINE OPTIONS ========= #
+
+
+  # define command line options
+  try:
+    opts, args = getopt.getopt(argv, "u:p:k:f:", ["user=", "password=", "file="])
+  except getopt.GetoptError, err:
+    print "ERROR: " + str(err)
+    print USAGE
+    sys.exit(2)
+
+
+  # Process options
+  for opt, arg in opts:
+    if opt in ("--user", "-u"):
+      USER = arg
+    elif opt in ("--password", "-p"):
+      PASSWORD = arg
+    elif opt in ("-k"):
+      try:
+        K1 = int(arg)
+      except ValueError:
+        print "ERROR: -x must be an integer"
+        sys.exit(2)
+    elif opt in ("-f", "--file"):
+      FILE = arg
+
+
+
+
+
+
+  # ========= PARAMETER CHECKS ========= #
+
+  # Make sure USER and PASSWORD and DOMAIN are supplied
+  if USER == "":
+    print "ERROR: user name must be provided with --user [user name]"
+    sys.exit(2)
+  elif PASSWORD == "":
+    print "ERROR: master password must be provided with --password [master password]"
+    sys.exit(2)
+  elif FILE == "":
+    print "ERROR: the file must be provided with --file [path to file]"
+    sys.exit(2)
+
+
+
+
+
+  # Get User ID based on hash of USER
+  USER_ID = hashlib.sha256(USER).hexdigest()
+
+
+
+
+
+  # ========= GENERATE USER TOKEN ========= #
+
+  USER_TOKEN = generateUserToken()
+  print USER_TOKEN
+
+
+  # log generation complete
+  f=open(FILE,'w')
+  f.write("complete\n")
+  f.write(USER_TOKEN)
+  f.close();
+
+
+
+
+
+
+# Call main with all args (excluding the command name)
+if __name__ == "__main__":
+    main(sys.argv[1:])
