@@ -20,7 +20,9 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.util.Base64;
 
-
+/**
+ * This class holds the static functions related to PSWD
+ */
 public class PSWD {
 
 

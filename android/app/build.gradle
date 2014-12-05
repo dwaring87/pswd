@@ -2,25 +2,23 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 'Google Inc.:Google APIs:19'
-    buildToolsVersion "21.1.0"
+    buildToolsVersion "21.1.1"
 
     defaultConfig {
         applicationId "com.waring.pswd"
         minSdkVersion 14
-        targetSdkVersion 19
+        targetSdkVersion 21
     }
 
     buildTypes {
         release {
-            runProguard false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+
         }
     }
 }
 
 dependencies {
-    compile 'com.android.support:support-v4:19.1.0'
-    compile files('libs/android-support-v13.jar')
+    compile 'com.android.support:support-v4:21.0.2'
     compile files('libs/core-1.51.0.0.jar')
     compile files('libs/pkix-1.51.0.0.jar')
     compile files('libs/prov-1.51.0.0.jar')

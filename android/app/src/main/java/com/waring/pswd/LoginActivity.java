@@ -24,19 +24,46 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+/**
+ * This Activity displays the Login screen where a User enters their
+ * username/nickname and their master password.  It is started by the
+ * {@link com.waring.pswd.MainActivity} when a user is not logged in.
+ * <p />
+ * If a previously generated user token is not found for the user, prompt
+ * the user to generate a new token and start {@link com.waring.pswd.TokenService}.
+ * <p />
+ * If a previously generated user token is found for the user, return to
+ * the {@link com.waring.pswd.MainActivity}.
+ */
 public class LoginActivity extends Activity {
 	
 	// UI Elements
+
+    /** The EditText for the Username */
 	private EditText ET_username;
+
+    /** The EditText for the Master Password */
 	private EditText ET_password;
+
+    /** The CheckBox to remember the Username */
 	private CheckBox CB_username;
+
+    /** The CheckBox to remember the Master Password */
 	private CheckBox CB_password;
+
+    /** The Login Button */
 	private Button BT_login;
-	
-	// Broadcast Receiver that receives token generation progress
+
+
+	/** The Broadcast Receiver that receives the token generation progress */
 	private BroadcastReceiver BR_TOKEN_GEN;
-	
-	
+
+
+    /**
+     * Set up the UI elements for the login form.  If there are saved credentials available,
+     * fill them into the form.
+     * @param savedInstanceState
+     */
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -73,7 +100,8 @@ public class LoginActivity extends Activity {
 		
 		ET_username.setText(saved_username);
 		ET_password.setText(saved_password);
-		
+
+        // Set remember checkboxes based on previously saved info
 		if ( !saved_username.equals("") ) {
 			CB_username.setChecked(true);
 		}
@@ -88,7 +116,7 @@ public class LoginActivity extends Activity {
 			CB_password.setChecked(false);
 		}
 		
-		// Alert remember password
+		// Alert remember password (let the user know this is a bad idea)
 		CB_password.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 			@Override
 			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -112,9 +140,13 @@ public class LoginActivity extends Activity {
 				}
 			}
 		});
-		
-		
-		// Process Login
+
+
+        /**
+         * Process login
+         * If a user token is found in the cache, return to the MainActivity
+         * If a user token is not found, show the Generate User Token Screen, then start the TokenService
+         */
 		BT_login.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -177,7 +209,7 @@ public class LoginActivity extends Activity {
 				// Generate User Token
 				else {
 					
-					// Show the Generate User Token Screen
+					// SHOW THE GENERATE USER TOKEN SCREEN
 					final ScrollView SV_formContainer = (ScrollView) findViewById(R.id.login_form_container);
 					final ScrollView SV_generateContainer = (ScrollView) findViewById(R.id.login_generate_container);
 					
@@ -225,7 +257,7 @@ public class LoginActivity extends Activity {
 							BT_back.setEnabled(false);
 							
 							
-							// Start Token Generating Service
+							// START THE TOKEN GENERATING SERVICE
 							Intent i = new Intent(getBaseContext(), TokenService.class);
 							i.putExtra("username", username);
 							i.putExtra("password", password);
@@ -248,8 +280,11 @@ public class LoginActivity extends Activity {
 		
 		
 	}
-	
-	
+
+
+    /**
+     * Register the Token Broadcast Receiver
+     */
 	@Override
 	public void onResume() {
 		super.onResume();
@@ -270,7 +305,11 @@ public class LoginActivity extends Activity {
          };
          this.registerReceiver(BR_TOKEN_GEN, intentFilter);
 	}
-	
+
+
+    /**
+     * Unregister the Token Broadcast Receiver
+     */
 	@Override
 	public void onPause() {
 		super.onPause();

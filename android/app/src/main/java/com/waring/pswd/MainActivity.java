@@ -1,9 +1,5 @@
 package com.waring.pswd;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
 import android.app.ActionBar;
 import android.app.ActionBar.Tab;
 import android.app.Activity;
@@ -21,7 +17,6 @@ import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
-import android.text.Html;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -43,76 +38,153 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+/**
+ * This Activity displays the options for generating a site-specific password in two tabs.  The
+ * general tab has the domain and length, the advanced tab has the rest of the options.
+ * <p />
+ * If the user is not logged in, this will start the {@link com.waring.pswd.LoginActivity}.
+ */
 public class MainActivity extends Activity implements ActionBar.TabListener {
 	
 	
 	// CURRENT USER INFORMATION
+
+    /** The current user's username */
 	private static String USERNAME = "";
+
+    /** The current user's master password */
 	private static String MASTER_PASSWORD = "";
+
+    /** The current user's user token */
 	private static String USER_TOKEN = "";
 	
-	
+
+
 	// TABS
+
+    /** The titles for the tabs */
 	private String[] TAB_TITLES = new String[]{"General", "Advanced"};
-	private final int TAB_COUNT = TAB_TITLES.length;
+
+    /** The number of tabs = length of titles */
+    private final int TAB_COUNT = TAB_TITLES.length;
+
+    /** A list to hold the Fragments */
 	private List<Fragment> FRAG_LIST = new ArrayList<Fragment>();
-	
+
+
+
 	// STATE VARIABLES
+    // Keys to hold the state values when restoring that app state
+
+    /** The currently selected tab */
 	private static final String STATE_SELECTED_NAVIGATION_ITEM = "selected_navigation_item";
-	private static final String STATE_USERNAME = "state_username";
+
+    /** The current user's username */
+    private static final String STATE_USERNAME = "state_username";
+
+    /** The current user's master password */
 	private static final String STATE_PASSWORD = "state_password";
+
+    /** The current user's user token */
 	private static final String STATE_TOKEN = "state_token";
-	
+
+
 	
 	// DEFAULT SETTINGS
+
+    /** The default length of the generated password */
 	private static final int DEFAULT_LENGTH = 24;
+
+    /** The default use of capital letters */
 	private static final boolean DEFAULT_CAPS = true;
+
+    /** The default use of symbol characters */
 	private static final boolean DEFAULT_SYMBOLS = true;
+
+    /** The default symbol characters to pick from */
 	private static final String DEFAULT_SYMCHARS = "!@$*-_.?";
+
+    /** The default number of hashes for generating the user token */
 	protected static final int DEFAULT_K1 = 10000000;
+
+    /** The default number of hashes for generating the site password */
 	private static final int DEFAULT_K2 = 250;
-	
+
+
+
 	// SETTINGS KEYS
+    // Keys to store values in the Shared Preferences
+
+    /** The SharedPrefs file name */
 	protected static final String PREFS_NAME = "PSWD_PREFS";
+
+    /** The password's domain */
 	private static final String PREFS_DOMAIN = "pref_domain";
+
+    /** The length of the password */
 	private static final String PREFS_LENGTH = "pref_length";
+
+    /** The flag to include uppercase letters */
 	private static final String PREFS_CAPS = "pref_caps";
+
+    /** The flag to include symbol characters */
 	private static final String PREFS_SYMBOLS = "pref_symbols";
+
+    /** The symbol characters to pick from */
 	private static final String PREFS_SYMCHARS = "pref_symchars";
+
+    /** The number of hashes used to generate the password */
 	private static final String PREFS_K2 = "pref_k2";
-	
+
+    /** A flag indicating the token generation has completed */
 	protected static final String PREFS_TOKEN_GEN_COMPLETE = "pref_token_gen_complete"; 
-	
+
+    /** An encrypted copy of the remembered username for login */
 	protected static final String PREFS_ENC_USERNAME = "pref_enc_username";
+
+    /** An encrypted copy of the remembered master password for login */
 	protected static final String PREFS_ENC_PASSWORD = "pref_enc_password";
+
+    /** The amount of time elapsed before the user is automatically logged out */
+	private final String PREFS_PAUSE_TIME = "pref_pause_time";
+
+    /** The default amount of time that can elapse after onPause() is called before auto logout */
+    private final long PREFS_MAX_PAUSE_TIME = 300000;   // 5 minutes
 	
-	private final String PREFS_PAUSE_TIME = "pref_pause_time";	// Automatically log out after 5 minutes
-	private final long PREFS_MAX_PAUSE_TIME = 300000;			// after onPause() is called
 	
-	
-	// Flag for Token Generation
+	/** Flag set to true when a token is being generated */
 	protected static boolean GENERATING_TOKEN = false;
-	
-	// Broadcast Receiver to Monitor Token Generation Progress
+
+
+	/** Broadcast Receiver to Monitor Token Generation Progress */
 	private BroadcastReceiver BR_TOKEN_GEN;
+
+    /** The intent name for the broadcast receiver */
 	protected static final String BR_INTENT = "GEN_TOKEN_BROADCAST";
 	
 	
-	// Login Request Code
+	/** Login request code */
 	private static final int LOGIN_REQUEST = 1;
 	
-	// Display Password Request Code
+	/** Display password request code */
 	private static final int DISPLAY_REQUEST = 2;
 	
 	
-	// More Information URL
+	/** More info URL */
 	private final String INFO_URL = "http://pswd.davidwaring.net/info.html";
 	
-	// Web Version URL
+	/** Web version URL */
 	private final String WEB_URL = "https://pswd.davidwaring.net/";
-	
-	
-	
+
+
+    /**
+     * Get any intent extras for the user's information.  Set up the actionbar and tabs.
+     * @param savedInstanceState
+     */
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -143,8 +215,13 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 	        actionBar.addTab(tab);
 		}
 	}
-	
-	
+
+
+    /**
+     * Check if a token is currently being generated.  If not and a user is not logged in,
+     * start the {@link com.waring.pswd.LoginActivity}.  Register the token generator broadcast
+     * receiver to monitor and show the progress of the token generation.
+     */
 	@Override
 	protected void onResume() {
 	    super.onResume();
@@ -177,7 +254,8 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 	    // Show the Login Activity if we're not currently generating a token and:
 	    //    the amount of time since last paused exceeds the time limit or
 	    //    we're missing any user info
-	    if ( !GENERATING_TOKEN && (delta_pause > PREFS_MAX_PAUSE_TIME || MainActivity.USERNAME.equals("") || MainActivity.MASTER_PASSWORD.equals("") || MainActivity.USER_TOKEN.equals("")) ) {
+	    if ( !GENERATING_TOKEN && (delta_pause > PREFS_MAX_PAUSE_TIME || MainActivity.USERNAME.equals("")
+                || MainActivity.MASTER_PASSWORD.equals("") || MainActivity.USER_TOKEN.equals("")) ) {
 	    	logout(false);
 	    }
 	    else {
@@ -231,8 +309,11 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         };
         this.registerReceiver(BR_TOKEN_GEN, intentFilter);
 	}
-	
-	
+
+
+    /**
+     * When pausing, keep track of the time since last pause.  Unregister broadcast receiver.
+     */
 	@Override
 	public void onPause() {
 		super.onPause();
@@ -263,21 +344,18 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
     	ab.setTitle("PSWD");
     	ab.setSubtitle(MainActivity.USERNAME);
 	}
-	
-	
-	
-	// CONFIG CHANGE
+
 	
 	@Override
 	public void onConfigurationChanged(Configuration newConfig) {
 	    super.onConfigurationChanged(newConfig);
 	}
 
-	
-	
-	
-	// SAVE AND RESTORE TAB STATE
-	
+
+    /**
+     * Save and restore tab state
+     * @param savedInstanceState
+     */
 	@Override
 	public void onRestoreInstanceState(Bundle savedInstanceState) {
 		//Restore the previously serialized current tab position.
@@ -298,7 +376,11 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 		}
 	}
 
-	  
+
+    /**
+     * Set the current tab state to be restored later
+     * @param outState
+     */
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
 		// Serialize the current tab position.
@@ -307,15 +389,13 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 		outState.putString(STATE_PASSWORD, MASTER_PASSWORD);
 		outState.putString(STATE_TOKEN, USER_TOKEN);
 	}
-	
-	
-	
 
-	
-	
-	
-	// ACTION BAR MENU
-	
+
+    /**
+     * Create the actionbar options menu from menu/main.xml
+     * @param menu
+     * @return
+     */
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
@@ -323,6 +403,11 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 		return true;
 	}
 
+    /**
+     * Parse and handle option menu selections
+     * @param item the selected menu item
+     * @return
+     */
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		int id = item.getItemId();
@@ -368,8 +453,14 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 	
 	
 	/**
-	 * Receive the Result of the Login Activity
-	 * and the Display Password Activity
+	 * Receive the Result of the {@link com.waring.pswd.LoginActivity} and the
+     * {@link com.waring.pswd.DisplayActivity}
+     * <p />
+     * When returning from the {@link com.waring.pswd.LoginActivity}, get the
+     * logged in user's credentials
+     * <p />
+     * When returning from the {@link com.waring.pswd.DisplayActivity}, check
+     * for a logout request
 	 */
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -482,7 +573,12 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 	
 	
 	// TAB CHANGES
-	
+
+    /**
+     * Change to the selected tab
+     * @param tab
+     * @param fragmentTransaction
+     */
 	@Override
 	public void onTabSelected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
 		
@@ -506,7 +602,12 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 		
 		fragmentTransaction.replace(android.R.id.content, tf);
 	}
-		
+
+    /**
+     * Remove the unselected tab
+     * @param tab
+     * @param fragmentTransaction
+     */
 	@Override
 	public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
 		if (FRAG_LIST.size() > tab.getPosition()) {
@@ -567,13 +668,10 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 	
 
 	/**
-	 * The fragment containing the tab's content
+	 * The Fragment containing the tab's content
 	 */
 	public static class TabFragment extends Fragment {
-		/**
-		 * The fragment argument representing the section number for this
-		 * fragment.
-		 */
+		/** The fragment argument representing the section number for this fragment. */
 		private static final String ARG_SECTION_NUMBER = "section_number";
 		private int index = -1;
 		

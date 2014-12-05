@@ -11,9 +11,18 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+/**
+ * This Activity displays the final generated password
+ */
 public class DisplayActivity extends Activity {
-	
-	
+
+
+    /**
+     * Get the final generated password and domain passed in with the Intent
+     * (keys "password" and "domain").  Setup the UI elements and fill in the
+     * password and domain.
+     * @param savedInstanceState
+     */
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);

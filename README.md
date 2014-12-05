@@ -7,7 +7,7 @@
 
 **Email**: [dave@davidwaring.net](mailto:dave@davidwaring.net)
 
-**Source Code**: [Gitlab](https://gitlab.davidwaring.net/dave/pswd/tree/master)
+**Source Code**: [GitHub](https://github.com/dwaring87/pswd)
 
 **Website**: [Web Implementation](https://pswd.davidwaring.net/)
 
