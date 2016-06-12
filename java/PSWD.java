@@ -1,5 +1,5 @@
 // Version 3.1.0
-// Author: David Waring <dave@davidwaring.net>
+// Author: David Waring <dev@davidwaring.net>
 // Information: http://pswd.davidwaring.net/info.html
 
 // NOTE: These functions have been pulled from the PSWD Class of the PSWD Android App

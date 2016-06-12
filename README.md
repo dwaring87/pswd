@@ -5,7 +5,7 @@
 
 **Author**: [David Waring](http://www.davidwaring.net/)
 
-**Email**: [dave@davidwaring.net](mailto:dave@davidwaring.net)
+**Email**: [dev@davidwaring.net](mailto:dev@davidwaring.net)
 
 **Source Code**: [GitHub](https://github.com/dwaring87/pswd)
 
