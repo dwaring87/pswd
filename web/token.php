@@ -32,7 +32,7 @@
     $call = $call . " -u '" . $user . "'";
     $call = $call . " -p '" . $password . "'";
     $call = $call . " -f '" . $file . "'";
-    $call = $call . " &> /dev/null &";
+    $call = $call . " > /dev/null 2>&1 &";
 
     // Start the function
     $last_line = system($call, $retval);
