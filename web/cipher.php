@@ -7,11 +7,11 @@
     }
 
     function encrypt($input) {
-      return base64_encode(mcrypt_encrypt(MCRYPT_RIJNDAEL_256, md5($securekey), $input, MCRYPT_MODE_CBC, md5(md5($securekey))));
+      return base64_encode(openssl_encrypt($input, "aes-256-cbc", md5($securekey), OPENSSL_RAW_DATA|OPENSSL_ZERO_PADDING, hex2bin(md5(md5($securekey)))));
     }
 
     function decrypt($input) {
-      return rtrim(mcrypt_decrypt(MCRYPT_RIJNDAEL_256, md5($securekey), base64_decode($input), MCRYPT_MODE_CBC, md5(md5($securekey))), "\0");
+      return openssl_decrypt(base64_decode($input), "aes-256-cbc", md5($securekey), OPENSSL_RAW_DATA|OPENSSL_ZERO_PADDING, hex2bin(md5(md5($securekey))));
     }
   }
 ?>
