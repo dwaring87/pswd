@@ -22,7 +22,7 @@
     // Create tracking key
     $rand = generateRandomString(30);
     $key = hash('sha256', $user . $rand);
-    echo $key;
+    echo $key . "\n";
 
     // File path
     $file = "/usr/share/nginx/pswd/tokens/" . $key;
@@ -43,6 +43,7 @@
   // TRACK
   if ( $cmd == "track" ) {
     $key = $_REQUEST['key'];
+    $key = preg_split('#\r?\n#', $key, 0)[0];
     $file = "/usr/share/nginx/pswd/tokens/" . $key;
 
     $last_line = system("cat '" . $file . "'", $retval);
@@ -52,6 +53,7 @@
   // CLEAR
   if ( $cmd == "clear" ) {
     $key = $_REQUEST['key'];
+    $key = preg_split('#\r?\n#', $key, 0)[0];
     $file = "/usr/share/nginx/pswd/tokens/" . $key;
     if (!unlink($file)) {
       echo ("false");
